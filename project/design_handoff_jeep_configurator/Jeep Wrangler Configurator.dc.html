@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/jeep-uae-design-system-9a8023e8-1c2e-4e9c-8524-9ed48cabe8c7/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/jeep-uae-design-system-9a8023e8-1c2e-4e9c-8524-9ed48cabe8c7/tokens/colors.css">
+<link rel="stylesheet" href="_ds/jeep-uae-design-system-9a8023e8-1c2e-4e9c-8524-9ed48cabe8c7/tokens/typography.css">
+<link rel="stylesheet" href="_ds/jeep-uae-design-system-9a8023e8-1c2e-4e9c-8524-9ed48cabe8c7/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/jeep-uae-design-system-9a8023e8-1c2e-4e9c-8524-9ed48cabe8c7/tokens/elevation.css">
+<link rel="stylesheet" href="_ds/jeep-uae-design-system-9a8023e8-1c2e-4e9c-8524-9ed48cabe8c7/tokens/motion.css">
+<link rel="stylesheet" href="_ds/jeep-uae-design-system-9a8023e8-1c2e-4e9c-8524-9ed48cabe8c7/styles.css">
+<script src="_ds/jeep-uae-design-system-9a8023e8-1c2e-4e9c-8524-9ed48cabe8c7/_ds_bundle.js"></script>
+<style>
+  body { margin: 0; background: #ffffff; font-family: var(--font-brand), Roboto, sans-serif; color: #212121; }
+  a { color: #212121; text-decoration: none; }
+  a:hover { color: #ffba00; }
+  @keyframes omFlash { 0% { background: #ffba00; } 100% { background: transparent; } }
+  @keyframes omShimmer { 0% { opacity: .35; } 50% { opacity: .9; } 100% { opacity: .35; } }
+  @keyframes omSlide { from { transform: translateX(24px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes omRise { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#ffffff;padding-bottom:152px">
+
+  <header style="background:#000000;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 24px;height:64px;position:sticky;top:0;z-index:60">
+    <div style="display:flex;align-items:center;gap:20px">
+      <img src="assets/logo-jeep-white.png" alt="Jeep" style="height:22px;width:auto;display:block">
+      <span style="color:#ffffff;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:normal">Configure &amp; Buy</span>
+      <span style="color:rgba(255,255,255,.7);font-size:13px">2026 Wrangler 4-Door</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onClick="{{ openSaved }}" style="background:transparent;border:0;color:#ffffff;font-size:13px;font-family:inherit;cursor:pointer;padding:8px 10px">{{ savedLabel }}</button>
+      <button onClick="{{ openCompare }}" style="background:transparent;border:0;color:#ffffff;font-size:13px;font-family:inherit;cursor:pointer;padding:8px 10px">Compare trims</button>
+      <button onClick="{{ shareBuild }}" style="background:transparent;border:1px solid rgba(255,255,255,.35);color:#ffffff;font-size:13px;font-family:inherit;cursor:pointer;padding:7px 14px">{{ shareLabel }}</button>
+      <button onClick="{{ startOver }}" style="background:transparent;border:0;color:rgba(255,255,255,.7);font-size:13px;font-family:inherit;cursor:pointer;padding:8px 10px">Start over</button>
+    </div>
+  </header>
+
+  <sc-if value="{{ showResume }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#ffba00;color:#000000;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 24px;font-size:14px">
+      <span>Resumed your last build — Wrangler 4-Door, saved 2 days ago. Selections and finance scenario restored.</span>
+      <div style="display:flex;gap:16px;align-items:center">
+        <button onClick="{{ startOver }}" style="background:transparent;border:1px solid #000;color:#000;font-family:inherit;font-size:12px;font-weight:700;text-transform:uppercase;padding:5px 12px;cursor:pointer">Start over</button>
+        <button onClick="{{ dismissResume }}" style="background:transparent;border:0;color:#000;font-family:inherit;font-size:18px;line-height:1;cursor:pointer">×</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ stockDown }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#f5f5f5;border-bottom:1px solid #e0e0e0;color:#636363;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 24px;font-size:13px">
+      <span>Live stock is temporarily unavailable. Your configuration and pricing are unaffected — retrying in the background.</span>
+      <button onClick="{{ retryStock }}" style="background:transparent;border:0;color:#212121;font-family:inherit;font-size:13px;text-decoration:underline;cursor:pointer">Retry now</button>
+    </div>
+  </sc-if>
+
+  <nav style="background:#ffffff;border-bottom:1px solid #e0e0e0;position:sticky;top:64px;z-index:50;overflow-x:auto">
+    <div style="display:flex;align-items:stretch;gap:0;min-width:760px;padding:0 16px">
+      <sc-for list="{{ steps }}" as="step" hint-placeholder-count="7">
+        <button onClick="{{ step.go }}" style="position:relative;flex:1 1 0;background:transparent;border:0;border-bottom:2px solid transparent;font-family:inherit;cursor:pointer;padding:14px 8px 12px;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap">
+          <sc-if value="{{ step.done }}" hint-placeholder-val="{{ false }}">
+            <span style="width:20px;height:20px;flex:none;background:#000000;color:#ffba00;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">✓</span>
+          </sc-if>
+          <sc-if value="{{ step.todo }}" hint-placeholder-val="{{ true }}">
+            <span style="width:20px;height:20px;flex:none;border:1px solid #cccccc;color:#636363;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">{{ step.num }}</span>
+          </sc-if>
+          <span style="font-size:12px;font-weight:700;text-transform:uppercase;color:#636363">{{ step.label }}</span>
+          <sc-if value="{{ step.active }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#ffba00"></span>
+          </sc-if>
+        </button>
+      </sc-for>
+    </div>
+  </nav>
+
+  <main style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:0;align-items:start">
+
+    <section style="background:#eeeeee;align-self:start;position:sticky;top:114px">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:0;background:#191920;color:#ffffff;padding:0 8px">
+        <sc-for list="{{ specStrip }}" as="s" hint-placeholder-count="5">
+          <div style="padding:10px 16px;display:flex;flex-direction:column;gap:2px">
+            <span style="font-size:10px;text-transform:uppercase;color:rgba(255,255,255,.6)">{{ s.k }}</span>
+            <span style="font-size:14px;font-weight:700">{{ s.v }}</span>
+          </div>
+        </sc-for>
+        <button onClick="{{ openSpec }}" style="margin-left:auto;background:transparent;border:0;color:#ffba00;font-family:inherit;font-size:12px;font-weight:700;text-transform:uppercase;cursor:pointer;padding:10px 16px">Full spec</button>
+      </div>
+
+      <div style="position:relative;padding:24px 24px 8px;min-height:300px;display:flex;align-items:center;justify-content:center;overflow:hidden">
+        <div style="position:relative;width:100%;max-width:760px;isolation:isolate">
+          <img src="assets/wrangler.png" alt="Configured Jeep Wrangler 4-Door" style="{{ carImgStyle }}">
+          <div style="{{ paintOverlayStyle }}"></div>
+        </div>
+        <sc-if value="{{ rendering }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;inset:0;background:#eeeeee;display:flex;align-items:center;justify-content:center">
+            <div style="width:70%;height:52%;background:#e0e0e0;animation:omShimmer 1s ease-in-out infinite"></div>
+          </div>
+        </sc-if>
+        <div style="position:absolute;left:24px;bottom:12px;font-size:11px;color:#757575">Colour and wheel renders are indicative. Production build pulls the live render sequence per configuration.</div>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 24px 20px">
+        <sc-for list="{{ views }}" as="v" hint-placeholder-count="4">
+          <button onClick="{{ v.pick }}" style="position:relative;background:#ffffff;border:1px solid #e0e0e0;font-family:inherit;font-size:12px;text-transform:uppercase;font-weight:700;color:#636363;padding:8px 14px;cursor:pointer">
+            {{ v.label }}
+            <sc-if value="{{ v.selected }}" hint-placeholder-val="{{ false }}">
+              <span style="position:absolute;inset:0;box-shadow:inset 0 0 0 2px #ffba00;pointer-events:none"></span>
+            </sc-if>
+          </button>
+        </sc-for>
+        <div style="display:flex;align-items:center;gap:10px;margin-left:auto;min-width:220px;flex:1 1 220px">
+          <span style="font-size:11px;text-transform:uppercase;color:#757575;white-space:nowrap">Rotate 360°</span>
+          <input type="range" min="0" max="35" step="1" value="{{ rotation }}" onChange="{{ setRotation }}" onInput="{{ setRotation }}" style="flex:1;accent-color:#ffba00">
+          <button onClick="{{ toggleZoom }}" style="background:#ffffff;border:1px solid #e0e0e0;font-family:inherit;font-size:12px;text-transform:uppercase;font-weight:700;padding:8px 12px;cursor:pointer">{{ zoomLabel }}</button>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid #e0e0e0;background:#ffffff;display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 24px">
+        <span style="{{ stockDotStyle }}"></span>
+        <span style="font-size:14px;font-weight:700;text-transform:uppercase">{{ stockStatus }}</span>
+        <span style="font-size:13px;color:#636363">{{ stockDetail }}</span>
+        <button onClick="{{ simulateOutage }}" style="margin-left:auto;background:transparent;border:1px dashed #cccccc;font-family:inherit;font-size:11px;text-transform:uppercase;color:#888b8d;cursor:pointer;padding:6px 10px">Demo: stock feed failure</button>
+        <button onClick="{{ openStock }}" style="background:transparent;border:0;font-family:inherit;font-size:13px;font-weight:700;text-transform:uppercase;color:#212121;text-decoration:underline;cursor:pointer">{{ stockCtaLabel }}</button>
+      </div>
+    </section>
+
+    <section style="background:#ffffff;border-left:1px solid #e0e0e0;min-height:60vh;padding:28px 76px 40px 28px">
+
+      <sc-if value="{{ isSummary }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <h2 style="margin:0 0 4px;font-size:26px;font-weight:700;text-transform:uppercase;line-height:1.25">Your Wrangler</h2>
+          <div style="width:3.2em;height:3px;background:#ffba00;margin-bottom:18px"></div>
+          <p style="margin:0 0 20px;font-size:14px;color:#636363;line-height:1.44">Reference {{ refCode }}. Quote this code in any Al-Futtaim Jeep showroom and the agent retrieves this exact build.</p>
+
+          <sc-for list="{{ summaryLines }}" as="line" hint-placeholder-count="7">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid #eeeeee">
+              <div style="display:flex;flex-direction:column;gap:2px">
+                <span style="font-size:10px;text-transform:uppercase;color:#888b8d">{{ line.group }}</span>
+                <span style="font-size:15px;color:#212121">{{ line.name }}</span>
+              </div>
+              <span style="font-size:14px;color:#53565a;white-space:nowrap">{{ line.price }}</span>
+            </div>
+          </sc-for>
+
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 10px">
+            <x-import component-from-global-scope="JeepUAEDesignSystem_9a8023.Button" variant="primary" size="lg" onClick="{{ openEnquire }}" style="{{ grow160 }}" hint-size="160px,48px">Enquire now</x-import>
+            <x-import component-from-global-scope="JeepUAEDesignSystem_9a8023.Button" variant="secondary" size="lg" onClick="{{ openEnquire }}" style="{{ grow160 }}" hint-size="160px,48px">Book a test drive</x-import>
+            <x-import component-from-global-scope="JeepUAEDesignSystem_9a8023.Button" variant="tertiary" size="lg" onClick="{{ openStock }}" style="{{ grow160outline }}" hint-size="160px,48px">Reserve this car</x-import>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px">
+            <button onClick="{{ saveBuild }}" style="flex:1 1 140px;background:#ffffff;border:1px solid #e0e0e0;font-family:inherit;font-size:13px;font-weight:700;text-transform:uppercase;padding:12px;cursor:pointer">Save build</button>
+            <button onClick="{{ shareBuild }}" style="flex:1 1 140px;background:#ffffff;border:1px solid #e0e0e0;font-family:inherit;font-size:13px;font-weight:700;text-transform:uppercase;padding:12px;cursor:pointer">{{ shareLabel }}</button>
+            <button onClick="{{ downloadQuote }}" style="flex:1 1 140px;background:#ffffff;border:1px solid #e0e0e0;font-family:inherit;font-size:13px;font-weight:700;text-transform:uppercase;padding:12px;cursor:pointer">PDF quote</button>
+            <button onClick="{{ openSpec }}" style="flex:1 1 140px;background:#ffffff;border:1px solid #e0e0e0;font-family:inherit;font-size:13px;font-weight:700;text-transform:uppercase;padding:12px;cursor:pointer">Full spec</button>
+          </div>
+          <p style="margin:18px 0 0;font-size:12px;color:#757575;line-height:1.44">Price excludes insurance. Includes 5% VAT, registration and admin. Warranty 3 years / 60,000 km and a 3-year service pack are included; extended cover is quoted separately.</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isPicker }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+            <div>
+              <h2 style="margin:0 0 4px;font-size:26px;font-weight:700;text-transform:uppercase;line-height:1.25">{{ stepTitle }}</h2>
+              <div style="width:3.2em;height:3px;background:#ffba00"></div>
+            </div>
+            <span style="font-size:12px;color:#888b8d;white-space:nowrap;padding-top:6px">{{ stepCount }}</span>
+          </div>
+          <p style="margin:14px 0 18px;font-size:14px;color:#636363;line-height:1.44">{{ stepHint }}</p>
+
+          <label style="display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:12px 14px;background:#f5f5f5;font-size:13px;color:#212121;cursor:pointer">
+            <input type="checkbox" checked="{{ availableOnly }}" onChange="{{ toggleAvailableOnly }}" style="accent-color:#ffba00;width:16px;height:16px">
+            <span>Show only combinations available within 8 weeks</span>
+          </label>
+
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ rows }}" as="row" hint-placeholder-count="5">
+              <div style="position:relative;display:flex;align-items:center;gap:14px;padding:14px;border:1px solid #e0e0e0;background:#ffffff;cursor:pointer" onClick="{{ row.pick }}">
+                <span style="{{ row.swatchStyle }}"></span>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                    <span style="font-size:15px;font-weight:500;color:#212121">{{ row.name }}</span>
+                    <sc-if value="{{ row.badge }}" hint-placeholder-val="{{ false }}">
+                      <span style="background:#ffba00;color:#000000;font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 6px">{{ row.badge }}</span>
+                    </sc-if>
+                  </div>
+                  <span style="font-size:12px;color:#757575;line-height:1.38">{{ row.sub }}</span>
+                  <sc-if value="{{ row.blocked }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:12px;color:#53565a;line-height:1.38">{{ row.blockedNote }}</span>
+                  </sc-if>
+                </div>
+                <span style="font-size:14px;color:#53565a;white-space:nowrap">{{ row.price }}</span>
+                <button onClick="{{ row.info }}" aria-label="More information" style="flex:none;width:28px;height:28px;background:transparent;border:1px solid #e0e0e0;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">
+                  <img src="assets/icons/icon-info-line.svg" alt="" style="width:16px;height:16px">
+                </button>
+                <sc-if value="{{ row.selected }}" hint-placeholder-val="{{ false }}">
+                  <span style="position:absolute;inset:0;box-shadow:inset 0 0 0 2px #ffba00;pointer-events:none"></span>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ isPacksStep }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ openPackCompare }}" style="margin-top:16px;background:transparent;border:0;font-family:inherit;font-size:13px;font-weight:700;text-transform:uppercase;text-decoration:underline;cursor:pointer;padding:0">Compare what is inside each pack</button>
+          </sc-if>
+          <sc-if value="{{ isTrimStep }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ openCompare }}" style="margin-top:16px;background:transparent;border:0;font-family:inherit;font-size:13px;font-weight:700;text-transform:uppercase;text-decoration:underline;cursor:pointer;padding:0">Compare all trims side by side</button>
+          </sc-if>
+        </div>
+      </sc-if>
+    </section>
+  </main>
+
+  <div style="position:fixed;left:0;right:0;bottom:0;z-index:70;background:#000000;color:#ffffff">
+    <sc-if value="{{ breakdownOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#191920;border-bottom:1px solid rgba(255,255,255,.1);padding:16px 24px;max-height:46vh;overflow:auto">
+        <div style="max-width:720px;margin:0 auto">
+          <sc-for list="{{ breakdown }}" as="b" hint-placeholder-count="6">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:7px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,.08)">
+              <span style="color:rgba(255,255,255,.75)">{{ b.k }}</span>
+              <span style="white-space:nowrap">{{ b.v }}</span>
+            </div>
+          </sc-for>
+          <p style="margin:12px 0 0;font-size:12px;color:rgba(255,255,255,.6);line-height:1.44">Included: 5% VAT, registration and admin, 3-year / 60,000 km warranty, 3-year service pack. Not included: insurance, fuel, extended warranty, dealer-fitted accessories marked as such.</p>
+        </div>
+      </div>
+    </sc-if>
+
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px;padding:12px 24px">
+      <div style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:3px">
+        <span style="font-size:12px;color:rgba(255,255,255,.65);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ specLine }}</span>
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <span style="font-size:21px;font-weight:700">{{ headlinePrice }}</span>
+          <span style="font-size:13px;color:rgba(255,255,255,.7)">{{ secondaryPrice }}</span>
+          <sc-if value="{{ showDelta }}" hint-placeholder-val="{{ false }}">
+            <span style="background:#ffba00;color:#000000;font-size:12px;font-weight:700;padding:2px 7px;animation:omRise .25s ease-out">{{ deltaLabel }}</span>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="display:flex;border:1px solid rgba(255,255,255,.25)">
+        <button onClick="{{ setCash }}" style="{{ cashTabStyle }}">Cash</button>
+        <button onClick="{{ setFinance }}" style="{{ financeTabStyle }}">Finance</button>
+        <button onClick="{{ setLease }}" style="{{ leaseTabStyle }}">Lease</button>
+      </div>
+
+      <button onClick="{{ toggleBreakdown }}" style="background:transparent;border:0;color:#ffffff;font-family:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:8px 4px">{{ breakdownLabel }}</button>
+      <button onClick="{{ openFinance }}" style="background:transparent;border:1px solid rgba(255,255,255,.35);color:#ffffff;font-family:inherit;font-size:13px;font-weight:700;text-transform:uppercase;padding:11px 16px;cursor:pointer">Payment options</button>
+      <x-import component-from-global-scope="JeepUAEDesignSystem_9a8023.Button" variant="primary" size="lg" onClick="{{ primaryAction }}" style="{{ btnAuto }}" hint-size="160px,48px">{{ primaryLabel }}</x-import>
+    </div>
+  </div>
+
+  <div style="position:fixed;right:16px;bottom:146px;z-index:65;display:flex;flex-direction:column;gap:10px;align-items:flex-end">
+    <sc-if value="{{ assistOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#ffffff;border:1px solid #e0e0e0;box-shadow:0 1px 3px rgba(48,49,51,.1);width:240px;padding:14px;display:flex;flex-direction:column;gap:8px;animation:omRise .2s ease-out">
+        <span style="font-size:12px;text-transform:uppercase;font-weight:700;color:#636363">Need a hand?</span>
+        <button onClick="{{ openEnquire }}" style="text-align:left;background:transparent;border:0;font-family:inherit;font-size:14px;cursor:pointer;padding:6px 0">Request a callback</button>
+        <button onClick="{{ openEnquire }}" style="text-align:left;background:transparent;border:0;font-family:inherit;font-size:14px;cursor:pointer;padding:6px 0">Chat with a specialist</button>
+        <a href="#" style="font-size:14px;padding:6px 0">WhatsApp 800 5119</a>
+      </div>
+    </sc-if>
+    <button onClick="{{ toggleAssist }}" aria-label="Assistance" style="width:52px;height:52px;border-radius:100px;border:0;background:#ffffff;box-shadow:0 1px 3px rgba(48,49,51,.1);cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center">
+      <img src="assets/icons/WhatsApp.png" alt="" style="width:30px;height:30px">
+    </button>
+  </div>
+
+  <sc-if value="{{ conflict }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:24px">
+      <div style="background:#ffffff;max-width:460px;width:100%;padding:28px;animation:omRise .2s ease-out">
+        <h3 style="margin:0 0 12px;font-size:21px;font-weight:700;text-transform:uppercase;line-height:1.25">Check this change</h3>
+        <p style="margin:0 0 20px;font-size:15px;color:#212121;line-height:1.44">{{ conflictText }}</p>
+        <div style="display:flex;gap:10px">
+          <button onClick="{{ confirmConflict }}" style="flex:1;background:#ffba00;color:#000000;border:0;font-family:inherit;font-size:14px;font-weight:700;text-transform:uppercase;padding:13px;cursor:pointer">Continue</button>
+          <button onClick="{{ cancelConflict }}" style="flex:1;background:#ffffff;border:1px solid #212121;font-family:inherit;font-size:14px;font-weight:700;text-transform:uppercase;padding:12px;cursor:pointer">Keep as is</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ exitIntent }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:88;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:24px">
+      <div style="background:#ffffff;max-width:520px;width:100%;padding:28px;animation:omRise .2s ease-out">
+        <h3 style="margin:0 0 10px;font-size:21px;font-weight:700;text-transform:uppercase;line-height:1.25">Keep this build</h3>
+        <p style="margin:0 0 18px;font-size:15px;color:#636363;line-height:1.44">We can email you this configuration with the render, itemised price and your finance scenario. No account needed.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <input type="email" placeholder="Email address" style="flex:1 1 220px;border:1px solid #cccccc;border-radius:4px;padding:11px 12px;font-family:inherit;font-size:14px">
+          <button onClick="{{ dismissExit }}" style="background:#ffba00;color:#000000;border:0;font-family:inherit;font-size:14px;font-weight:700;text-transform:uppercase;padding:12px 20px;cursor:pointer">Email my build</button>
+        </div>
+        <button onClick="{{ dismissExit }}" style="margin-top:14px;background:transparent;border:0;font-family:inherit;font-size:13px;color:#757575;text-decoration:underline;cursor:pointer;padding:0">No thanks, keep configuring</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ drawerOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:85;background:rgba(0,0,0,.45)" onClick="{{ closeDrawer }}"></div>
+  </sc-if>
+
+  <sc-if value="{{ drawerOpen }}" hint-placeholder-val="{{ false }}">
+    <aside style="position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);z-index:86;background:#ffffff;overflow:auto;animation:omSlide .22s ease-out;display:flex;flex-direction:column">
+      <div style="position:sticky;top:0;background:#000000;color:#ffffff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 24px;z-index:2">
+        <span style="font-size:16px;font-weight:700;text-transform:uppercase">{{ drawerTitle }}</span>
+        <button onClick="{{ closeDrawer }}" aria-label="Close" style="background:transparent;border:0;color:#ffffff;font-family:inherit;font-size:22px;line-height:1;cursor:pointer">×</button>
+      </div>
+      <div style="padding:24px;flex:1">
+
+        <sc-if value="{{ drawerIsInfo }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="background:#eeeeee;height:180px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;overflow:hidden">
+              <img src="assets/wrangler.png" alt="" style="width:120%;max-width:none;opacity:.9">
+            </div>
+            <h3 style="margin:0 0 8px;font-size:21px;font-weight:700;line-height:1.25">{{ infoName }}</h3>
+            <p style="margin:0 0 14px;font-size:16px;color:#212121;line-height:1.44">{{ infoBenefit }}</p>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;font-size:14px">
+              <span style="color:#636363">Price</span><span>{{ infoPrice }}</span>
+            </div>
+            <p style="margin:14px 0 0;font-size:13px;color:#757575;line-height:1.44">{{ infoFitment }}</p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ drawerIsFinance }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="display:flex;gap:0;border:1px solid #e0e0e0;margin-bottom:20px">
+              <button onClick="{{ setCash }}" style="{{ finCashStyle }}">Cash</button>
+              <button onClick="{{ setFinance }}" style="{{ finFinanceStyle }}">Finance</button>
+              <button onClick="{{ setLease }}" style="{{ finLeaseStyle }}">Lease</button>
+            </div>
+            <div style="background:#f5f5f5;padding:18px;margin-bottom:20px">
+              <span style="font-size:12px;text-transform:uppercase;color:#636363">{{ finHeadlineLabel }}</span>
+              <div style="font-size:31px;font-weight:700;line-height:1.25">{{ finHeadline }}</div>
+              <span style="font-size:13px;color:#636363">{{ finSubline }}</span>
+            </div>
+
+            <sc-for list="{{ finControls }}" as="c" hint-placeholder-count="4">
+              <div style="margin-bottom:18px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px">
+                  <span style="font-size:13px;font-weight:500">{{ c.label }}</span>
+                  <span style="font-size:14px;color:#53565a">{{ c.value }}</span>
+                </div>
+                <input type="range" min="{{ c.min }}" max="{{ c.max }}" step="{{ c.step }}" value="{{ c.raw }}" onChange="{{ c.set }}" onInput="{{ c.set }}" style="width:100%;accent-color:#ffba00">
+              </div>
+            </sc-for>
+
+            <div style="border-top:1px solid #e0e0e0;padding-top:18px;margin-top:6px">
+              <span style="font-size:12px;text-transform:uppercase;font-weight:700;color:#636363">Trade-in</span>
+              <p style="margin:6px 0 12px;font-size:13px;color:#757575;line-height:1.44">Add your current car and we apply an indicative value to the down payment.</p>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px">
+                <input placeholder="Make" style="border:1px solid #cccccc;border-radius:4px;padding:10px;font-family:inherit;font-size:14px;min-width:0">
+                <input placeholder="Model" style="border:1px solid #cccccc;border-radius:4px;padding:10px;font-family:inherit;font-size:14px;min-width:0">
+                <input placeholder="Year" style="border:1px solid #cccccc;border-radius:4px;padding:10px;font-family:inherit;font-size:14px;min-width:0">
+                <input placeholder="Kilometers" style="border:1px solid #cccccc;border-radius:4px;padding:10px;font-family:inherit;font-size:14px;min-width:0">
+              </div>
+              <button onClick="{{ applyTradeIn }}" style="margin-top:10px;background:#ffffff;border:1px solid #212121;font-family:inherit;font-size:13px;font-weight:700;text-transform:uppercase;padding:11px 16px;cursor:pointer">{{ tradeInLabel }}</button>
+            </div>
+
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:22px">
+              <button onClick="{{ closeDrawer }}" style="flex:1 1 180px;background:#ffba00;color:#000000;border:0;font-family:inherit;font-size:14px;font-weight:700;text-transform:uppercase;padding:13px;cursor:pointer">Apply to my build</button>
+              <button onClick="{{ openEnquire }}" style="flex:1 1 180px;background:#ffffff;border:1px solid #212121;font-family:inherit;font-size:14px;font-weight:700;text-transform:uppercase;padding:12px;cursor:pointer">Check eligibility</button>
+            </div>
+            <p style="margin:14px 0 0;font-size:12px;color:#757575;line-height:1.44">Indicative only. Subject to credit approval by Al-Futtaim Finance. Rates and residual values vary by profile.</p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ drawerIsCompare }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <label style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:13px;cursor:pointer">
+              <input type="checkbox" checked="{{ diffOnly }}" onChange="{{ toggleDiffOnly }}" style="accent-color:#ffba00;width:16px;height:16px">
+              <span>Show differences only</span>
+            </label>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:0;font-size:13px">
+              <sc-for list="{{ compareCells }}" as="cell" hint-placeholder-count="24">
+                <div style="{{ cell.style }}">{{ cell.text }}</div>
+              </sc-for>
+            </div>
+            <button onClick="{{ openSavedCompare }}" style="margin-top:18px;background:transparent;border:0;font-family:inherit;font-size:13px;font-weight:700;text-transform:uppercase;text-decoration:underline;cursor:pointer;padding:0">Compare my saved builds instead</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ drawerIsSaved }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <p style="margin:0 0 16px;font-size:14px;color:#636363;line-height:1.44">Saved on this device. No account required — add an email and we will keep them across devices.</p>
+            <sc-for list="{{ savedBuilds }}" as="b" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:14px;padding:14px;border:1px solid #e0e0e0;margin-bottom:10px">
+                <span style="{{ b.swatchStyle }}"></span>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+                  <span style="font-size:15px;font-weight:500">{{ b.name }}</span>
+                  <span style="font-size:12px;color:#757575">{{ b.sub }}</span>
+                  <sc-if value="{{ b.diff }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:12px;color:#53565a">{{ b.diff }}</span>
+                  </sc-if>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                  <span style="font-size:14px;white-space:nowrap">{{ b.price }}</span>
+                  <button onClick="{{ b.load }}" style="background:transparent;border:0;font-family:inherit;font-size:12px;font-weight:700;text-transform:uppercase;text-decoration:underline;cursor:pointer;padding:0">Open</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ drawerIsStock }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <div style="background:#f5f5f5;padding:16px;margin-bottom:18px">
+              <span style="font-size:14px;font-weight:700;text-transform:uppercase">{{ stockStatus }}</span>
+              <p style="margin:6px 0 0;font-size:13px;color:#636363;line-height:1.44">{{ stockDetail }}</p>
+            </div>
+            <span style="font-size:12px;text-transform:uppercase;font-weight:700;color:#636363">Closest matching units</span>
+            <div style="margin-top:12px;display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{ stockUnits }}" as="u" hint-placeholder-count="0">
+                <div style="display:flex;gap:14px;border:1px solid #e0e0e0;padding:12px">
+                  <img src="{{ u.img }}" alt="" style="width:92px;height:70px;object-fit:cover;flex:none">
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+                    <span style="font-size:14px;font-weight:500">{{ u.title }}</span>
+                    <span style="font-size:12px;color:#757575;line-height:1.38">{{ u.diff }}</span>
+                    <span style="font-size:12px;color:#888b8d">{{ u.vin }}</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:8px">
+                    <span style="font-size:14px;white-space:nowrap">{{ u.price }}</span>
+                    <button onClick="{{ openEnquire }}" style="background:#ffba00;color:#000;border:0;font-family:inherit;font-size:11px;font-weight:700;text-transform:uppercase;padding:7px 10px;cursor:pointer">Enquire</button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <button onClick="{{ openEnquire }}" style="margin-top:18px;width:100%;background:#000000;color:#ffffff;border:0;font-family:inherit;font-size:14px;font-weight:700;text-transform:uppercase;padding:14px;cursor:pointer">Reserve with AED 5,000 deposit</button>
+            <p style="margin:12px 0 0;font-size:12px;color:#757575;line-height:1.44">Deposit is fully refundable for 7 days and is deducted from the final invoice.</p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ drawerIsSpec }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <sc-for list="{{ specSheet }}" as="s" hint-placeholder-count="10">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid #eeeeee;font-size:14px">
+                <span style="color:#636363">{{ s.k }}</span><span style="text-align:right">{{ s.v }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ drawerIsEnquire }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <div style="width:48px;height:48px;background:#ffba00;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;margin-bottom:16px">✓</div>
+                <h3 style="margin:0 0 10px;font-size:21px;font-weight:700;text-transform:uppercase;line-height:1.25">Enquiry received</h3>
+                <p style="margin:0 0 16px;font-size:15px;color:#212121;line-height:1.44">A product specialist from Al-Futtaim Jeep will call you within 4 working hours. Your build is saved under reference {{ refCode }} and has been sent to the showroom team.</p>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px">
+                  <button onClick="{{ closeDrawer }}" style="flex:1 1 160px;background:#ffba00;color:#000;border:0;font-family:inherit;font-size:14px;font-weight:700;text-transform:uppercase;padding:13px;cursor:pointer">Back to my build</button>
+                  <button onClick="{{ shareBuild }}" style="flex:1 1 160px;background:#ffffff;border:1px solid #212121;font-family:inherit;font-size:14px;font-weight:700;text-transform:uppercase;padding:12px;cursor:pointer">{{ shareLabel }}</button>
+                </div>
+                <span style="font-size:12px;text-transform:uppercase;font-weight:700;color:#636363">Payload sent to SAP C4C</span>
+                <pre style="margin:8px 0 0;background:#191920;color:#e0e0e0;font-size:11px;line-height:1.5;padding:14px;overflow:auto;white-space:pre-wrap;word-break:break-word">{{ payload }}</pre>
+              </div>
+            </sc-if>
+            <sc-if value="{{ notSubmitted }}" hint-placeholder-val="{{ true }}">
+              <div>
+                <p style="margin:0 0 18px;font-size:14px;color:#636363;line-height:1.44">Your full configuration, price and finance scenario are attached automatically. Four fields is all we need.</p>
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <x-import component-from-global-scope="JeepUAEDesignSystem_9a8023.Input" bordered="{{ true }}" placeholder="Full name" hint-size="100%,40px"></x-import>
+                  <x-import component-from-global-scope="JeepUAEDesignSystem_9a8023.Input" bordered="{{ true }}" value="{{ phone }}" onChange="{{ setPhone }}" placeholder="Mobile (+971 5X XXX XXXX)" hint-size="100%,40px"></x-import>
+                  <sc-if value="{{ phoneError }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:12px;color:#53565a">Enter a valid UAE mobile number, for example +971 50 123 4567.</span>
+                  </sc-if>
+                  <x-import component-from-global-scope="JeepUAEDesignSystem_9a8023.Input" bordered="{{ true }}" type="email" placeholder="Email" hint-size="100%,40px"></x-import>
+                  <x-import component-from-global-scope="JeepUAEDesignSystem_9a8023.Select" bordered="{{ true }}" value="{{ showroom }}" onChange="{{ setShowroom }}" hint-size="100%,40px">
+                    <option value="dfc">Preferred showroom — Dubai Festival City</option>
+                    <option value="auh">Abu Dhabi — Airport Road</option>
+                    <option value="shj">Sharjah — Al Wahda Street</option>
+                    <option value="aan">Al Ain — Zayed Bin Sultan Street</option>
+                  </x-import>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:18px">
+                  <x-import component-from-global-scope="JeepUAEDesignSystem_9a8023.Button" variant="primary" size="lg" onClick="{{ submitLead }}" style="{{ grow180 }}" hint-size="180px,48px">Send enquiry</x-import>
+                  <x-import component-from-global-scope="JeepUAEDesignSystem_9a8023.Button" variant="tertiary" size="lg" href="#" icon-before="assets/icons/icon-phone-line.svg" style="{{ grow140 }}" hint-size="140px,48px">Call 800 5119</x-import>
+                </div>
+                <p style="margin:14px 0 0;font-size:12px;color:#757575;line-height:1.44">By submitting you agree to be contacted about this enquiry. No OTP is required unless you place a deposit.</p>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ drawerIsPacks }}" hint-placeholder-val="{{ false }}">
+          <div>
+            <sc-for list="{{ packDetail }}" as="p" hint-placeholder-count="4">
+              <div style="border:1px solid #e0e0e0;padding:16px;margin-bottom:12px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px">
+                  <span style="font-size:16px;font-weight:500">{{ p.name }}</span>
+                  <span style="font-size:14px;color:#53565a;white-space:nowrap">{{ p.price }}</span>
+                </div>
+                <sc-for list="{{ p.items }}" as="i" hint-placeholder-count="3">
+                  <div style="font-size:13px;color:#636363;line-height:1.5">{{ i }}</div>
+                </sc-for>
+                <sc-if value="{{ p.overlap }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-top:10px;background:#f5f5f5;padding:10px;font-size:12px;color:#212121;line-height:1.44">{{ p.overlap }}</div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+      </div>
+    </aside>
+  </sc-if>
+
+  <x-import component-from-global-scope="JeepUAEDesignSystem_9a8023.Footer" logos="{{ footerLogos }}" legal="{{ footerLegal }}" copyright="© Al-Futtaim 2026. All rights reserved" hint-size="100%,180px"></x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startStep&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;color&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;trim&quot;,&quot;color&quot;,&quot;wheels&quot;,&quot;interior&quot;,&quot;packs&quot;,&quot;options&quot;,&quot;summary&quot;],&quot;section&quot;:&quot;Behaviour&quot;},&quot;defaultMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;finance&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;cash&quot;,&quot;finance&quot;,&quot;lease&quot;],&quot;section&quot;:&quot;Behaviour&quot;},&quot;showMostChosen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behaviour&quot;}}">
+const TRIMS = [
+  { id: "sports", name: "Sport S 2.0L Turbo", price: 208000, sub: "272 hp · Command-Trac part-time 4x4 · 17\" alloys", power: "272 hp", accel: "6.8 s", drive: "Command-Trac", engine: "2.0L I4 Turbo", wheelsStd: "w17a" },
+  { id: "sahara", name: "Sahara 2.0L Turbo", price: 239000, badge: "Most chosen", sub: "272 hp · Selec-Trac full-time 4x4 · body-colour fenders", power: "272 hp", accel: "6.8 s", drive: "Selec-Trac", engine: "2.0L I4 Turbo", wheelsStd: "w18" },
+  { id: "willys", name: "Willys 3.6L V6", price: 259900, sub: "285 hp · Command-Trac · rock rails and 32\" mud-terrain tyres", power: "285 hp", accel: "7.6 s", drive: "Command-Trac", engine: "3.6L V6", wheelsStd: "w17a" },
+  { id: "rubicon", name: "Rubicon 3.6L V6", price: 289900, sub: "285 hp · Rock-Trac 4:1 · lockers and disconnecting sway bar", power: "285 hp", accel: "7.6 s", drive: "Rock-Trac 4:1", engine: "3.6L V6", wheelsStd: "w17b" },
+  { id: "rubiconx", name: "Rubicon X 3.6L V6", price: 329900, sub: "285 hp · steel bumpers, 35\" tyres, full leather", power: "285 hp", accel: "7.7 s", drive: "Rock-Trac 4:1", engine: "3.6L V6", wheelsStd: "w17b" }
+];
+
+const COLORS = [
+  { id: "white", name: "Bright White Clear-Coat", finish: "Solid", price: 0, hex: "#f2f2f0", mult: 0.18 },
+  { id: "black", name: "Black Clear-Coat", finish: "Solid", price: 0, hex: "#141414", mult: 0.9 },
+  { id: "anvil", name: "Anvil Clear-Coat", finish: "Metallic", price: 1750, hex: "#8d9094", mult: 0.55 },
+  { id: "earl", name: "Earl Clear-Coat", finish: "Metallic", price: 1750, hex: "#93a8b5", mult: 0.55 },
+  { id: "sarge", name: "Sarge Green Clear-Coat", finish: "Solid", price: 2400, hex: "#6d6f52", mult: 0.62 },
+  { id: "velocity", name: "High Velocity Clear-Coat", finish: "Solid", price: 2400, hex: "#d8c81f", mult: 0.6 },
+  { id: "red", name: "Firecracker Red Clear-Coat", finish: "Solid", price: 2400, hex: "#b1241f", mult: 0.68 },
+  { id: "hydro", name: "Hydro Blue Pearl-Coat", finish: "Pearl", price: 3500, hex: "#1f4d80", mult: 0.72 }
+];
+
+const WHEELS = [
+  { id: "w17a", name: "17\" Machined Alloy", sub: "17 × 7.5 in · 245/75 all-terrain", price: 0, face: "#b8b8b8" },
+  { id: "w17b", name: "17\" Black Painted Alloy", sub: "17 × 7.5 in · 33\" all-terrain", price: 0, face: "#2a2a2a" },
+  { id: "w18", name: "18\" Tech Grey Machined", sub: "18 × 7.5 in · 255/70 all-season", price: 2900, face: "#8a8d90" },
+  { id: "w20", name: "20\" Polished Black", sub: "20 × 8 in · 275/55 road-biased", price: 5600, face: "#3c3c3c" },
+  { id: "wbl", name: "17\" Beadlock-Capable", sub: "17 × 7.5 in · 35\" mud-terrain · Rubicon only", price: 7800, face: "#4a4238", trims: ["rubicon", "rubiconx"] }
+];
+
+const INTERIORS = [
+  { id: "cloth", name: "Black Cloth", sub: "Cloth · heated front seats optional", price: 0, hex: "#2e2e30", tex: "repeating-linear-gradient(45deg,#2e2e30 0 3px,#3a3a3d 3px 6px)" },
+  { id: "leatherblk", name: "Black Leather-Trimmed", sub: "Nappa-look leather · heated and ventilated", price: 6500, hex: "#1c1c1e", tex: "radial-gradient(circle at 30% 30%,#3a3a3d 0 2px,#1c1c1e 2px)" },
+  { id: "saddle", name: "Dark Saddle Leather", sub: "Two-tone with black dash · heated", price: 8200, hex: "#6b4429", tex: "radial-gradient(circle at 30% 30%,#8a5c39 0 2px,#6b4429 2px)" },
+  { id: "redx", name: "Red / Black Leather", sub: "Rubicon X exclusive · red accent stitching", price: 11000, hex: "#7a1f1c", tex: "radial-gradient(circle at 30% 30%,#9c2f2a 0 2px,#7a1f1c 2px)", trims: ["rubiconx"] }
+];
+
+const PACKS = [
+  { id: "cold", name: "Cold Weather Group", sub: "Heated seats, heated steering wheel, remote start", price: 4200, items: ["Heated front seats", "Heated steering wheel", "Remote start system", "All-weather floor mats included"], overlap: "Includes all-weather floor mats — remove the standalone accessory to avoid paying twice." },
+  { id: "safety", name: "Advanced Safety Group", sub: "Adaptive cruise, blind-spot, forward collision warning", price: 5900, items: ["Adaptive cruise control with stop", "Blind-spot and cross-path detection", "Forward collision warning plus", "Parallel and perpendicular park assist"] },
+  { id: "sky", name: "Sky One-Touch Power Top", sub: "Full-length powered canvas roof", price: 14500, items: ["Power-retracting canvas roof", "Removable rear quarter windows", "Freedom panel storage bag"], overlap: "Not compatible with roof rack cross rails." },
+  { id: "tow", name: "Trailer Tow & HD Electrical", sub: "3.5 t capacity, 240-amp alternator, 7-pin", price: 6300, items: ["Class II receiver hitch", "240-amp alternator", "4- and 7-pin wiring harness", "Trailer sway control"] },
+  { id: "xtreme", name: "Xtreme Recon Package", sub: "35\" tyres, beadlock-capable wheels, 1.5\" lift", price: 21000, items: ["35-inch mud-terrain tyres", "17\" beadlock-capable wheels", "1.5-inch factory lift", "4.56 axle ratio", "Full-size matching spare"], trims: ["rubicon", "rubiconx"], overlap: "Forces 17\" beadlock-capable wheels; any other wheel selection is replaced." }
+];
+
+const OPTIONS = [
+  { id: "rails", name: "Mopar Rock Rails", sub: "Tubular steel, dealer-fitted", price: 3400, fit: "Dealer installation required, approximately 2 hours." },
+  { id: "mats", name: "All-Weather Floor Mats", sub: "Deep-dish rubber, front and rear", price: 1100, fit: "Owner-fit, no installation needed." },
+  { id: "rack", name: "Roof Rack Cross Rails", sub: "75 kg dynamic load", price: 2200, fit: "Dealer-fitted. Not compatible with the Sky One-Touch power top." },
+  { id: "steps", name: "Mopar Side Steps", sub: "Black powder-coated tubular", price: 2800, fit: "Dealer installation required." },
+  { id: "winch", name: "Warn Front Winch 9.5 t", sub: "Requires Xtreme Recon steel bumper", price: 9800, fit: "Dealer installation required. Needs the Xtreme Recon front bumper.", needs: "xtreme" }
+];
+
+const STEPS = [
+  { id: "trim", label: "Trim" },
+  { id: "color", label: "Exterior" },
+  { id: "wheels", label: "Wheels" },
+  { id: "interior", label: "Interior" },
+  { id: "packs", label: "Packs" },
+  { id: "options", label: "Accessories" },
+  { id: "summary", label: "Summary" }
+];
+
+const VAT = 0.05;
+const FEES = 2100;
+const KEY = "jeep-wrangler-config-v1";
+
+const money = (n) => "AED " + Math.round(n).toLocaleString("en-AE");
+const byId = (list, id) => list.find((x) => x.id === id) || list[0];
+
+class Component extends DCLogic {
+  state = {
+    step: "color",
+    trim: "sahara",
+    color: "hydro",
+    wheels: "w18",
+    interior: "cloth",
+    packs: ["safety"],
+    options: ["mats"],
+    view: "exterior",
+    rotation: 8,
+    zoom: false,
+    rendering: false,
+    mode: "finance",
+    down: 20,
+    tenure: 60,
+    balloon: 0,
+    rate: 3.49,
+    tradeIn: false,
+    drawer: null,
+    infoItem: null,
+    breakdownOpen: false,
+    availableOnly: false,
+    diffOnly: true,
+    assistOpen: false,
+    conflict: null,
+    exitIntent: false,
+    showResume: false,
+    stockDown: false,
+    submitted: false,
+    phone: "",
+    phoneError: false,
+    shareLabel: "Share",
+    tradeInLabel: "Get indicative value",
+    delta: null,
+    saved: 3
+  };
+
+  componentDidMount() {
+    let restored = false;
+    try {
+      const hash = decodeURIComponent((location.hash || "").replace(/^#/, ""));
+      if (hash.startsWith("build=")) {
+        this.setState(Object.assign({}, JSON.parse(atob(hash.slice(6)))));
+        restored = true;
+      } else {
+        const raw = localStorage.getItem(KEY);
+        if (raw) { this.setState(JSON.parse(raw)); restored = true; }
+      }
+    } catch (e) { /* corrupt state — fall through to defaults */ }
+    if (restored) this.setState({ showResume: true, drawer: null, submitted: false });
+    else this.setState({ step: this.props.startStep || "color", mode: this.props.defaultMode || "finance" });
+    this._exit = (e) => {
+      if (e.clientY <= 0 && !this.state.exitIntent && !this.state.drawer) this.setState({ exitIntent: true });
+    };
+    document.addEventListener("mouseout", this._exit);
+
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("mouseout", this._exit);
+    clearTimeout(this._stockTimer);
+    clearTimeout(this._deltaTimer);
+    clearTimeout(this._renderTimer);
+  }
+
+  persist(next) {
+    const s = Object.assign({}, this.state, next);
+    const keep = { step: s.step, trim: s.trim, color: s.color, wheels: s.wheels, interior: s.interior, packs: s.packs, options: s.options, mode: s.mode, down: s.down, tenure: s.tenure, balloon: s.balloon, rate: s.rate, tradeIn: s.tradeIn };
+    try {
+      localStorage.setItem(KEY, JSON.stringify(keep));
+      history.replaceState(null, "", "#build=" + btoa(JSON.stringify(keep)));
+    } catch (e) { /* storage unavailable */ }
+  }
+
+  apply(next, note) {
+    const before = this.total(this.state);
+    this.setState(next, () => {
+      const after = this.total(this.state);
+      this.persist({});
+      if (after !== before) {
+        const d = after - before;
+        this.setState({ delta: (d > 0 ? "+" : "−") + money(Math.abs(d)).replace("AED ", "AED ") });
+        clearTimeout(this._deltaTimer);
+        this._deltaTimer = setTimeout(() => this.setState({ delta: null }), 2600);
+      }
+    });
+    if (note) {
+      clearTimeout(this._renderTimer);
+      this.setState({ rendering: true });
+      this._renderTimer = setTimeout(() => this.setState({ rendering: false }), 320);
+    }
+  }
+
+  activePacks(s) { return PACKS.filter((p) => s.packs.indexOf(p.id) > -1); }
+  activeOptions(s) { return OPTIONS.filter((o) => s.options.indexOf(o.id) > -1); }
+
+  base(s) { return byId(TRIMS, s.trim).price; }
+  extras(s) {
+    return byId(COLORS, s.color).price + byId(WHEELS, s.wheels).price + byId(INTERIORS, s.interior).price +
+      this.activePacks(s).reduce((a, p) => a + p.price, 0) + this.activeOptions(s).reduce((a, o) => a + o.price, 0);
+  }
+  subtotal(s) { return this.base(s) + this.extras(s); }
+  total(s) { return this.subtotal(s) * (1 + VAT) + FEES; }
+
+  monthly(s) {
+    const t = this.total(s);
+    const dp = t * (s.down / 100) + (s.tradeIn ? 42000 : 0);
+    const bal = t * (s.balloon / 100);
+    const P = Math.max(t - dp, 0);
+    const r = s.rate / 100 / 12;
+    const n = s.tenure;
+    if (r === 0) return (P - bal) / n;
+    return (P - bal / Math.pow(1 + r, n)) * r / (1 - Math.pow(1 + r, -n));
+  }
+  leaseMonthly(s) { return this.total(s) * 0.0142; }
+
+  stock(s) {
+    if (s.stockDown) return { label: "Availability unavailable", detail: "Stock feed is retrying. You can keep configuring.", dot: "#888b8d", cta: "Retry" };
+    const packsCount = s.packs.length + s.options.length;
+    if (s.trim === "sahara" && (s.color === "white" || s.color === "black") && s.wheels === "w18" && packsCount <= 2)
+      return { label: "In stock", detail: "4 units at Dubai Festival City and Abu Dhabi. Delivery in 5 working days.", dot: "#1f7a3d", cta: "See matching units" };
+    if (s.trim === "rubicon" || s.trim === "rubiconx")
+      return { label: "In transit", detail: "Arriving at port in 4–6 weeks. Allocation can be held against a deposit.", dot: "#ffba00", cta: "See matching units" };
+    return { label: "Build to order", detail: "Factory order, indicative lead time 12–16 weeks from confirmation.", dot: "#636363", cta: "See close matches" };
+  }
+
+  // --- selection with dependency handling -------------------------------
+  choose(kind, id) {
+    const s = this.state;
+    if (kind === "trim") {
+      const trim = byId(TRIMS, id);
+      const wheelOk = !byId(WHEELS, s.wheels).trims || byId(WHEELS, s.wheels).trims.indexOf(id) > -1;
+      const intOk = !byId(INTERIORS, s.interior).trims || byId(INTERIORS, s.interior).trims.indexOf(id) > -1;
+      const packDrop = this.activePacks(s).filter((p) => p.trims && p.trims.indexOf(id) < 0);
+      if (!wheelOk || !intOk || packDrop.length) {
+        const lost = [].concat(wheelOk ? [] : [byId(WHEELS, s.wheels).name], intOk ? [] : [byId(INTERIORS, s.interior).name], packDrop.map((p) => p.name));
+        return this.setState({ conflict: { text: "Selecting " + trim.name + " removes " + lost.join(", ") + ". Everything else in your build is kept.", run: () => this.apply({ trim: id, wheels: wheelOk ? s.wheels : trim.wheelsStd, interior: intOk ? s.interior : "cloth", packs: s.packs.filter((p) => packDrop.map((x) => x.id).indexOf(p) < 0), options: s.options.filter((o) => o !== "winch" || packDrop.map((x) => x.id).indexOf("xtreme") < 0) }, true) } });
+      }
+      return this.apply({ trim: id }, true);
+    }
+    if (kind === "color") return this.apply({ color: id }, true);
+    if (kind === "wheels") return this.apply({ wheels: id }, true);
+    if (kind === "interior") return this.apply({ interior: id, view: "interior" }, true);
+    if (kind === "packs") {
+      const on = s.packs.indexOf(id) > -1;
+      if (!on && id === "sky" && s.options.indexOf("rack") > -1)
+        return this.setState({ conflict: { text: "Selecting Sky One-Touch Power Top removes Roof Rack Cross Rails — the two cannot be fitted together.", run: () => this.apply({ packs: s.packs.concat(["sky"]), options: s.options.filter((o) => o !== "rack") }, true) } });
+      if (!on && id === "xtreme" && s.wheels !== "wbl")
+        return this.setState({ conflict: { text: "Xtreme Recon includes 17\" beadlock-capable wheels and replaces your " + byId(WHEELS, s.wheels).name + ".", run: () => this.apply({ packs: s.packs.concat(["xtreme"]), wheels: "wbl" }, true) } });
+      if (on && id === "xtreme" && s.options.indexOf("winch") > -1)
+        return this.setState({ conflict: { text: "Removing Xtreme Recon also removes the Warn Front Winch, which needs its steel front bumper.", run: () => this.apply({ packs: s.packs.filter((p) => p !== "xtreme"), options: s.options.filter((o) => o !== "winch") }, true) } });
+      return this.apply({ packs: on ? s.packs.filter((p) => p !== id) : s.packs.concat([id]) }, true);
+    }
+    if (kind === "options") {
+      const on = s.options.indexOf(id) > -1;
+      if (!on && id === "rack" && s.packs.indexOf("sky") > -1)
+        return this.setState({ conflict: { text: "Roof Rack Cross Rails cannot be fitted with the Sky One-Touch Power Top. Continuing removes the power top.", run: () => this.apply({ options: s.options.concat(["rack"]), packs: s.packs.filter((p) => p !== "sky") }, true) } });
+      return this.apply({ options: on ? s.options.filter((o) => o !== id) : s.options.concat([id]) });
+    }
+  }
+
+  rowsFor(step) {
+    const s = this.state;
+    const mk = (kind, list, selectedTest, extra) => list
+      .filter((it) => !(s.availableOnly && it.price > 12000))
+      .map((it) => {
+        const blocked = it.trims ? it.trims.indexOf(s.trim) < 0 : (it.needs ? s.packs.indexOf(it.needs) < 0 : false);
+        return Object.assign({
+          id: it.id,
+          name: it.name,
+          sub: it.sub || (it.finish ? it.finish + " finish" : ""),
+          price: it.price ? "+" + money(it.price) : "Included",
+          badge: (this.props.showMostChosen === false ? "" : it.badge) || "",
+          blocked: blocked,
+          blockedNote: it.trims ? "Available on " + it.trims.map((t) => byId(TRIMS, t).name.split(" ")[0]).join(" and ") + " only" : (it.needs ? "Requires the Xtreme Recon package" : ""),
+          selected: selectedTest(it),
+          pick: () => { if (!blocked) this.choose(kind, it.id); },
+          info: (e) => { e.stopPropagation(); this.setState({ drawer: "info", infoItem: Object.assign({ kind: kind }, it) }); }
+        }, extra ? extra(it) : {});
+      });
+
+    const sw = (css) => ({ swatchStyle: Object.assign({ width: "48px", height: "48px", flex: "none", border: "1px solid #e0e0e0", display: "block" }, css) });
+
+    const noSwatch = { swatchStyle: { display: "none" } };
+    if (step === "trim") return mk("trim", TRIMS, (t) => t.id === s.trim, (t) => Object.assign({}, noSwatch, { price: money(t.price) }));
+    if (step === "color") return mk("color", COLORS, (c) => c.id === s.color, (c) => sw({ background: c.finish === "Solid" ? c.hex : "linear-gradient(135deg," + c.hex + " 0%,#ffffff40 45%," + c.hex + " 100%)", backgroundColor: c.hex }));
+    if (step === "wheels") return mk("wheels", WHEELS, (w) => w.id === s.wheels, (w) => sw({ background: "radial-gradient(circle at 50% 50%," + w.face + " 0 40%,#1a1a1a 41% 100%)", borderRadius: "100px" }));
+    if (step === "interior") return mk("interior", INTERIORS, (i) => i.id === s.interior, (i) => sw({ background: i.tex, backgroundSize: "8px 8px" }));
+    if (step === "packs") return mk("packs", PACKS, (p) => s.packs.indexOf(p.id) > -1, () => noSwatch);
+    return mk("options", OPTIONS, (o) => s.options.indexOf(o.id) > -1, () => noSwatch);
+  }
+
+  tabStyle(on, dark) {
+    return {
+      background: on ? "#ffba00" : "transparent",
+      color: on ? "#000000" : (dark ? "#ffffff" : "#212121"),
+      border: 0,
+      fontFamily: "inherit",
+      fontSize: "13px",
+      fontWeight: 700,
+      textTransform: "uppercase",
+      padding: "10px 16px",
+      cursor: "pointer",
+      flex: dark ? "none" : "1"
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const trim = byId(TRIMS, s.trim), color = byId(COLORS, s.color), wheel = byId(WHEELS, s.wheels), interior = byId(INTERIORS, s.interior);
+    const stock = this.stock(s);
+    const total = this.total(s), monthly = this.monthly(s), lease = this.leaseMonthly(s);
+    const stepIndex = STEPS.map((x) => x.id).indexOf(s.step);
+    const isInterior = s.view === "interior";
+    const zoomScale = s.zoom ? 1.9 : 1;
+
+    const carScale = (isInterior ? 2.6 : 1) * zoomScale * (s.view === "wheel" ? 2.4 : 1);
+    const carShift = s.view === "wheel" ? "22%" : (isInterior ? "-6%" : "0%");
+
+    const infoItem = s.infoItem || {};
+    const benefit = {
+      trim: "The trim sets the drivetrain, axles and standard equipment. Everything after this step is fitted on top of it.",
+      color: "A factory-applied finish with a matching touch-up pen supplied. Pearl and metallic coats carry a small premium and a longer lead time.",
+      wheels: "Wheel diameter changes ride comfort and off-road clearance. Larger diameters look sharper on road; 17-inch keeps more sidewall for dune driving.",
+      interior: "Seat material affects heat build-up in UAE summers. Leather ventilates faster with the seat coolers; cloth stays cooler when parked.",
+      packs: "A pack bundles factory-fitted equipment at less than the sum of its parts. Packs are built into the car and cannot be added later.",
+      options: "Accessories are fitted by the dealer and can be added after delivery, though fitting during PDI avoids a second workshop visit."
+    }[infoItem.kind] || "";
+
+    const drawer = s.drawer;
+    const compareTrims = [TRIMS[1], TRIMS[3]];
+    const compareRows = [
+      ["", trim.name.split(" ")[0] === compareTrims[0].name.split(" ")[0] ? compareTrims[0].name : compareTrims[0].name, compareTrims[1].name],
+      ["Price from", money(compareTrims[0].price), money(compareTrims[1].price)],
+      ["Engine", compareTrims[0].engine, compareTrims[1].engine],
+      ["Power", compareTrims[0].power, compareTrims[1].power],
+      ["0–100 km/h", compareTrims[0].accel, compareTrims[1].accel],
+      ["4WD system", compareTrims[0].drive, compareTrims[1].drive],
+      ["Axles", "Dana 30 / Dana 35", "Dana 44 heavy duty"],
+      ["Lockers", "None", "Front and rear electronic"],
+      ["Sway bar", "Fixed", "Electronic disconnect"],
+      ["Tyres", "255/70 R18 all-season", "285/70 R17 all-terrain"],
+      ["Seats", "5", "5"],
+      ["Touchscreen", "12.3-inch Uconnect® 5", "12.3-inch Uconnect® 5"]
+    ];
+    const compareCells = [];
+    compareRows.forEach((r, ri) => {
+      if (s.diffOnly && ri > 0 && r[1] === r[2]) return;
+      r.forEach((cell, ci) => {
+        compareCells.push({
+          text: cell,
+          style: {
+            padding: "10px 8px",
+            borderBottom: "1px solid #eeeeee",
+            fontWeight: ri === 0 ? 700 : (ci === 0 ? 400 : 500),
+            color: ci === 0 ? "#636363" : "#212121",
+            background: ri === 0 ? "#f5f5f5" : "transparent",
+            textTransform: ri === 0 ? "uppercase" : "none",
+            fontSize: ri === 0 ? "12px" : "13px"
+          }
+        });
+      });
+    });
+
+    const summaryLines = [
+      { group: "Model", name: "2026 Jeep® Wrangler 4-Door", price: money(trim.price) },
+      { group: "Trim", name: trim.name, price: "Included" },
+      { group: "Exterior", name: color.name, price: color.price ? "+" + money(color.price) : "Included" },
+      { group: "Wheels", name: wheel.name, price: wheel.price ? "+" + money(wheel.price) : "Included" },
+      { group: "Interior", name: interior.name, price: interior.price ? "+" + money(interior.price) : "Included" }
+    ].concat(
+      this.activePacks(s).map((p) => ({ group: "Pack", name: p.name, price: "+" + money(p.price) })),
+      this.activeOptions(s).map((o) => ({ group: "Accessory", name: o.name, price: "+" + money(o.price) }))
+    );
+
+    const payload = JSON.stringify({
+      model: "teujp0014-2026", material: "JPJL4S26", trim: trim.id,
+      options: [color.id, wheel.id, interior.id].concat(s.packs, s.options),
+      totalOnRoad: Math.round(total),
+      finance: { type: s.mode, downPct: s.down, tenure: s.tenure, balloonPct: s.balloon, ratePct: s.rate, monthly: Math.round(monthly) },
+      stockRef: stock.label === "In stock" ? "DXB-FC-4812" : null,
+      source: { utm_source: "configurator", utm_medium: "web", step: s.step }
+    }, null, 2);
+
+    return {
+      footerLogos: ["assets/logo-jeep-white.png", "assets/logo-alfuttaim-te.png"],
+      footerLegal: ["Privacy policy", "Terms of use", "Cookie settings"],
+      btnAuto: { width: "auto", flex: "0 0 auto", padding: "0 26px" },
+      grow140: { flex: "1 1 140px" },
+      grow160: { flex: "1 1 160px" },
+      grow160outline: { flex: "1 1 160px", border: "1px solid #212121" },
+      grow180: { flex: "1 1 180px" },
+      showroom: s.showroom || "dfc",
+      setShowroom: (e) => this.setState({ showroom: e.target.value }),
+      steps: STEPS.map((st, i) => ({
+        num: String(i + 1), label: st.label, active: st.id === s.step, done: i < stepIndex, todo: i >= stepIndex,
+        go: () => this.apply({ step: st.id })
+      })),
+      specStrip: [
+        { k: "Power", v: trim.power }, { k: "0–100", v: trim.accel }, { k: "Drivetrain", v: trim.drive },
+        { k: "Consumption", v: trim.engine === "3.6L V6" ? "11.2 L/100km" : "9.6 L/100km" }, { k: "Seats", v: "5" }
+      ],
+      views: [
+        { label: "Exterior", selected: s.view === "exterior", pick: () => this.setState({ view: "exterior", zoom: false }) },
+        { label: "Interior", selected: s.view === "interior", pick: () => this.setState({ view: "interior", zoom: false }) },
+        { label: "Wheel", selected: s.view === "wheel", pick: () => this.setState({ view: "wheel", zoom: false }) },
+        { label: "Detail", selected: s.view === "detail", pick: () => this.setState({ view: "detail", zoom: true }) }
+      ],
+      rotation: s.rotation,
+      setRotation: (e) => this.setState({ rotation: Number(e.target.value) }),
+      toggleZoom: () => this.setState({ zoom: !s.zoom }),
+      zoomLabel: s.zoom ? "Zoom out" : "Zoom in",
+      rendering: s.rendering,
+
+      carImgStyle: {
+        display: "block", width: "100%", height: "auto",
+        filter: "brightness(" + (1.05 + (1 - color.mult) * 1.5) + ") contrast(" + (0.82 + color.mult * 0.3) + ") saturate(0.35)",
+        transform: "scale(" + carScale + ") translateX(" + carShift + ") rotateY(" + ((s.rotation - 8) * 2.2) + "deg)",
+        transformOrigin: "50% 55%",
+        transition: "transform .35s ease, filter .35s ease"
+      },
+      paintOverlayStyle: {
+        position: "absolute", inset: 0, pointerEvents: "none",
+        background: color.hex, opacity: 0.62,
+        mixBlendMode: "multiply",
+        WebkitMaskImage: "url(assets/wrangler.png)", maskImage: "url(assets/wrangler.png)",
+        WebkitMaskSize: "100% 100%", maskSize: "100% 100%",
+        transform: "scale(" + carScale + ") translateX(" + carShift + ") rotateY(" + ((s.rotation - 8) * 2.2) + "deg)",
+        transformOrigin: "50% 55%",
+        transition: "transform .35s ease, background .25s ease"
+      },
+
+      stockStatus: stock.label, stockDetail: stock.detail, stockCtaLabel: stock.cta,
+      stockDotStyle: { width: "10px", height: "10px", borderRadius: "100px", background: stock.dot, display: "block", flex: "none" },
+      stockDown: s.stockDown,
+      retryStock: () => this.setState({ stockDown: false }),
+      simulateOutage: () => {
+        this.setState({ stockDown: true });
+        clearTimeout(this._stockTimer);
+        this._stockTimer = setTimeout(() => this.setState({ stockDown: false }), 6000);
+      },
+
+      isSummary: s.step === "summary",
+      isPicker: s.step !== "summary",
+      isTrimStep: s.step === "trim",
+      isPacksStep: s.step === "packs",
+      stepTitle: { trim: "Choose your trim", color: "Exterior colour", wheels: "Wheels", interior: "Interior", packs: "Equipment packs", options: "Accessories" }[s.step] || "",
+      stepCount: this.rowsFor(s.step).length + " options",
+      stepHint: {
+        trim: "Sahara is the most configured Wrangler in the UAE. Rubicon adds the hardware that matters off road.",
+        color: "Pearl and metallic finishes carry a premium. Swatch shown is the real paint sample; the render is an approximation.",
+        wheels: "Diameter shown with the tyre fitted as standard on your trim.",
+        interior: "Material shown at macro scale. Ventilated seats are standard from Sahara upward.",
+        packs: "Factory-fitted. Cannot be added after the car is built.",
+        options: "Dealer-fitted. Can be added at delivery or later."
+      }[s.step] || "",
+      rows: this.rowsFor(s.step),
+      availableOnly: s.availableOnly,
+      toggleAvailableOnly: () => this.apply({ availableOnly: !s.availableOnly }),
+
+      summaryLines: summaryLines,
+      refCode: "JEP-26W-" + (4100 + Math.round(total % 800)),
+
+      specLine: trim.name + " · " + color.name + " · " + wheel.name,
+      headlinePrice: s.mode === "cash" ? money(total) : money(s.mode === "lease" ? lease : monthly) + "/mo",
+      secondaryPrice: s.mode === "cash" ? "Monthly from " + money(monthly) : "Total on-road " + money(total),
+      showDelta: !!s.delta, deltaLabel: s.delta || "",
+      cashTabStyle: this.tabStyle(s.mode === "cash", true),
+      financeTabStyle: this.tabStyle(s.mode === "finance", true),
+      leaseTabStyle: this.tabStyle(s.mode === "lease", true),
+      finCashStyle: this.tabStyle(s.mode === "cash"),
+      finFinanceStyle: this.tabStyle(s.mode === "finance"),
+      finLeaseStyle: this.tabStyle(s.mode === "lease"),
+      setCash: () => this.apply({ mode: "cash" }),
+      setFinance: () => this.apply({ mode: "finance" }),
+      setLease: () => this.apply({ mode: "lease" }),
+
+      breakdownOpen: s.breakdownOpen,
+      breakdownLabel: s.breakdownOpen ? "Hide breakdown" : "Price breakdown",
+      toggleBreakdown: () => this.setState({ breakdownOpen: !s.breakdownOpen }),
+      breakdown: [{ k: trim.name + " base price", v: money(trim.price) }]
+        .concat(
+          color.price ? [{ k: color.name, v: money(color.price) }] : [],
+          wheel.price ? [{ k: wheel.name, v: money(wheel.price) }] : [],
+          interior.price ? [{ k: interior.name, v: money(interior.price) }] : [],
+          this.activePacks(s).map((p) => ({ k: p.name, v: money(p.price) })),
+          this.activeOptions(s).map((o) => ({ k: o.name, v: money(o.price) })),
+          [{ k: "Subtotal", v: money(this.subtotal(s)) }, { k: "VAT 5%", v: money(this.subtotal(s) * VAT) }, { k: "Registration and admin", v: money(FEES) }, { k: "Total on-road", v: money(total) }]
+        ),
+
+      primaryLabel: s.step === "summary" ? "Enquire now" : "Continue",
+      primaryAction: () => {
+        if (s.step === "summary") return this.setState({ drawer: "enquire" });
+        this.apply({ step: STEPS[Math.min(stepIndex + 1, STEPS.length - 1)].id });
+      },
+
+      drawerOpen: !!drawer,
+      drawerTitle: { info: "Option detail", finance: "Payment options", compare: "Compare trims", saved: "Saved builds", stock: "Availability", spec: "Full specification", enquire: s.submitted ? "Confirmation" : "Enquire", packs: "Pack contents" }[drawer] || "",
+      drawerIsInfo: drawer === "info", drawerIsFinance: drawer === "finance", drawerIsCompare: drawer === "compare",
+      drawerIsSaved: drawer === "saved", drawerIsStock: drawer === "stock", drawerIsSpec: drawer === "spec",
+      drawerIsEnquire: drawer === "enquire", drawerIsPacks: drawer === "packs",
+      closeDrawer: () => this.setState({ drawer: null }),
+      openFinance: () => this.setState({ drawer: "finance" }),
+      openCompare: () => this.setState({ drawer: "compare" }),
+      openSaved: () => this.setState({ drawer: "saved" }),
+      openSavedCompare: () => this.setState({ drawer: "saved" }),
+      openStock: () => this.setState({ drawer: "stock" }),
+      openSpec: () => this.setState({ drawer: "spec" }),
+      openEnquire: () => this.setState({ drawer: "enquire", submitted: false }),
+      openPackCompare: () => this.setState({ drawer: "packs" }),
+
+      infoName: infoItem.name || "", infoBenefit: benefit,
+      infoPrice: infoItem.price ? "+" + money(infoItem.price) : "Included in this trim",
+      infoFitment: infoItem.fit || (infoItem.kind === "packs" ? "Factory-fitted at build. Cannot be retrofitted." : "Factory-fitted at build."),
+
+      finHeadlineLabel: s.mode === "cash" ? "Total on-road" : (s.mode === "lease" ? "Monthly lease" : "Monthly instalment"),
+      finHeadline: s.mode === "cash" ? money(total) : money(s.mode === "lease" ? lease : monthly),
+      finSubline: s.mode === "cash" ? "Paid in full on collection" : (s.mode === "lease" ? "36 months, 20,000 km/year, insurance and servicing included" : s.tenure + " months at " + s.rate.toFixed(2) + "% · " + money(total * s.down / 100) + " down"),
+      finControls: s.mode === "cash" ? [] : [
+        { label: "Down payment", value: s.down + "% · " + money(total * s.down / 100), min: 0, max: 60, step: 5, raw: s.down, set: (e) => this.apply({ down: Number(e.target.value) }) },
+        { label: "Tenure", value: s.tenure + " months", min: 12, max: 84, step: 12, raw: s.tenure, set: (e) => this.apply({ tenure: Number(e.target.value) }) },
+        { label: "Balloon / residual", value: s.balloon + "% · " + money(total * s.balloon / 100), min: 0, max: 40, step: 5, raw: s.balloon, set: (e) => this.apply({ balloon: Number(e.target.value) }) },
+        { label: "Profit rate", value: s.rate.toFixed(2) + "% per year", min: 199, max: 699, step: 25, raw: Math.round(s.rate * 100), set: (e) => this.apply({ rate: Number(e.target.value) / 100 }) }
+      ],
+      tradeInLabel: s.tradeIn ? "AED 42,000 applied to down payment" : this.state.tradeInLabel,
+      applyTradeIn: () => this.apply({ tradeIn: true }),
+
+      diffOnly: s.diffOnly,
+      toggleDiffOnly: () => this.setState({ diffOnly: !s.diffOnly }),
+      compareCells: compareCells,
+
+      savedBuilds: [
+        { name: "Sahara · Hydro Blue Pearl", sub: "18\" Tech Grey · Safety Group", price: money(276900), diff: "AED 13,600 less than current build", swatchStyle: { width: "44px", height: "44px", flex: "none", background: "#1f4d80", border: "1px solid #e0e0e0", display: "block" }, load: () => this.apply({ trim: "sahara", color: "hydro", wheels: "w18", interior: "cloth", packs: ["safety"], options: [], drawer: null }, true) },
+        { name: "Rubicon · Sarge Green", sub: "Beadlock-capable · Xtreme Recon", price: money(368400), diff: "Adds Xtreme Recon, 35\" tyres", swatchStyle: { width: "44px", height: "44px", flex: "none", background: "#6d6f52", border: "1px solid #e0e0e0", display: "block" }, load: () => this.apply({ trim: "rubicon", color: "sarge", wheels: "wbl", interior: "leatherblk", packs: ["xtreme", "safety"], options: ["rails"], drawer: null }, true) },
+        { name: "Sport S · Bright White", sub: "17\" Machined · no packs", price: money(220500), diff: "Lowest monthly of your saved builds", swatchStyle: { width: "44px", height: "44px", flex: "none", background: "#f2f2f0", border: "1px solid #e0e0e0", display: "block" }, load: () => this.apply({ trim: "sports", color: "white", wheels: "w17a", interior: "cloth", packs: [], options: [], drawer: null }, true) }
+      ],
+      savedLabel: s.saved + " saved builds",
+
+      stockUnits: [
+        { img: "assets/stock-a.jpg", title: "2026 Wrangler 4-Door " + trim.name.split(" ")[0], diff: (color.id === "white" ? "Anvil Clear-Coat" : "Bright White Clear-Coat") + " instead of " + color.name + ", otherwise identical", vin: "VIN ending 4812 · Dubai Festival City", price: money(total - 3500) },
+        { img: "assets/stock-a.jpg", title: "2026 Wrangler 4-Door " + trim.name.split(" ")[0], diff: "Adds Trailer Tow group, 18\" wheels", vin: "VIN ending 5177 · Abu Dhabi Airport Road", price: money(total + 6300) },
+        { img: "assets/stock-a.jpg", title: "2026 Wrangler 4-Door " + trim.name.split(" ")[0], diff: (interior.id === "cloth" ? "Black Leather-Trimmed" : "Black Cloth") + " interior, no accessories", vin: "VIN ending 5290 · Sharjah", price: money(total - 9100) }
+      ],
+
+      specSheet: [
+        { k: "Engine", v: trim.engine }, { k: "Power", v: trim.power }, { k: "Torque", v: trim.engine === "3.6L V6" ? "347 Nm" : "400 Nm" },
+        { k: "Transmission", v: "8-speed automatic" }, { k: "4WD system", v: trim.drive }, { k: "0–100 km/h", v: trim.accel },
+        { k: "Seats", v: "5" }, { k: "Ground clearance", v: s.wheels === "wbl" ? "312 mm" : "242 mm" },
+        { k: "Wading depth", v: s.wheels === "wbl" ? "864 mm" : "762 mm" }, { k: "Towing capacity", v: "3,500 kg" },
+        { k: "Infotainment", v: "12.3-inch Uconnect® 5" }, { k: "Safety features", v: "Up to 110 available safety and security features" },
+        { k: "Warranty", v: "3 years / 60,000 km" }, { k: "Service pack", v: "3 years included" }
+      ],
+
+      packDetail: PACKS.map((p) => ({ name: p.name, price: "+" + money(p.price), items: p.items, overlap: p.overlap || "" })),
+
+      submitted: s.submitted, notSubmitted: !s.submitted,
+      phone: s.phone, phoneError: s.phoneError,
+      setPhone: (e) => this.setState({ phone: e.target.value, phoneError: false }),
+      submitLead: () => {
+        const ok = /^(\+?971|0)?5[024568]\d{7}$/.test(s.phone.replace(/[\s-]/g, ""));
+        if (!ok) return this.setState({ phoneError: true });
+        this.setState({ submitted: true, saved: s.saved + 1 });
+      },
+      payload: payload,
+
+      saveBuild: () => { this.persist({}); this.setState({ saved: s.saved + 1, drawer: "saved" }); },
+      shareBuild: () => {
+        this.persist({});
+        try { navigator.clipboard.writeText(location.href); } catch (e) { /* clipboard blocked */ }
+        this.setState({ shareLabel: "Link copied" });
+        setTimeout(() => this.setState({ shareLabel: "Share" }), 2000);
+      },
+      shareLabel: s.shareLabel,
+      downloadQuote: () => window.print(),
+      startOver: () => {
+        try { localStorage.removeItem(KEY); history.replaceState(null, "", location.pathname); } catch (e) { /* noop */ }
+        this.setState({ step: "trim", trim: "sahara", color: "white", wheels: "w18", interior: "cloth", packs: [], options: [], showResume: false, drawer: null });
+      },
+      showResume: s.showResume,
+      dismissResume: () => this.setState({ showResume: false }),
+
+      assistOpen: s.assistOpen,
+      toggleAssist: () => this.setState({ assistOpen: !s.assistOpen }),
+      exitIntent: s.exitIntent,
+      dismissExit: () => this.setState({ exitIntent: false }),
+
+      conflict: !!s.conflict,
+      conflictText: s.conflict ? s.conflict.text : "",
+      confirmConflict: () => { const c = s.conflict; this.setState({ conflict: null }, () => c && c.run()); },
+      cancelConflict: () => this.setState({ conflict: null })
+    };
+  }
+}
+
+</script>
+</body>
+</html>
