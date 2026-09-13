@@ -1,0 +1,76 @@
+/* Jeep UAE Design System tokens — ported verbatim from the design handoff bundle
+   (_ds/jeep-uae-design-system-9a8023e8.../tokens/*.css). Do not introduce new values. */
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap");
+@font-face{font-family:BrandFont;src:local("BrandFont-Light"),local("Roboto Light"),local("Roboto");font-weight:300;font-style:normal;font-stretch:normal;font-display:block}
+@font-face{font-family:BrandFont;src:local("BrandFont-Regular"),local("Roboto");font-weight:400;font-style:normal;font-stretch:normal;font-display:block}
+@font-face{font-family:BrandFont;src:local("BrandFont-Bold"),local("Roboto Bold"),local("Roboto");font-weight:700;font-style:normal;font-stretch:normal;font-display:block}
+@font-face{font-family:BrandFontMedium;src:local("BrandFont-Medium"),local("Roboto Medium"),local("Roboto");font-weight:500;font-style:normal;font-stretch:normal;font-display:block}
+
+:root{
+--font-brand:"BrandFont","Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica Neue,sans-serif;--font-brand-medium:"BrandFontMedium","Roboto",sans-serif;--font-weight-light:300;--font-weight-regular:400;--font-weight-medium:500;--font-weight-bold:700;
+
+/* Brand */
+--brand-yellow:#ffba00;--brand-yellow-hover:#e6a700;--brand-black:#000000;--brand-white:#ffffff;
+/* Neutrals */
+--grey-900:#191920;--grey-850:#212121;--grey-700:#636363;--grey-650:#707070;--grey-600:#757575;--grey-500:#888b8d;--grey-400:#9e9e9e;--grey-300:#cccccc;--grey-250:#e0e0e0;--grey-200:#eeeeee;--grey-150:#f0f0f0;--grey-100:#f5f5f5;--grey-50:#fcfcfc;
+/* Semantic text */
+--text-primary:var(--grey-850);--text-body:var(--brand-black);--text-muted:var(--grey-600);--text-placeholder:var(--grey-400);--text-inverse:var(--brand-white);--text-on-brand:var(--brand-black);--text-strikethrough:var(--grey-400);--text-footer-link:rgba(255,255,255,.7);
+/* Semantic surfaces */
+--surface-page:var(--brand-white);--surface-card:var(--brand-white);--surface-subtle:var(--grey-200);--surface-muted:var(--grey-100);--surface-accordion:var(--grey-50);--surface-inverse:var(--brand-black);--surface-footer:var(--brand-black);--surface-header:var(--brand-black);--surface-inpage-menu:var(--grey-900);--surface-brand:var(--brand-yellow);
+/* Semantic lines */
+--border-default:var(--grey-250);--border-strong:var(--grey-650);--border-input:var(--grey-400);--border-divider:var(--grey-150);--border-brand:var(--brand-yellow);--border-footer:rgba(255,255,255,.1);--border-accent-underline:var(--brand-yellow);
+/* Interactive */
+--action-primary-bg:var(--brand-yellow);--action-primary-fg:var(--brand-black);--action-primary-bg-hover:var(--brand-black);--action-primary-fg-hover:var(--brand-white);--action-secondary-bg:var(--brand-black);--action-secondary-fg:var(--brand-white);--action-tertiary-bg:var(--brand-white);--action-tertiary-fg:var(--brand-black);--action-disabled-bg:var(--grey-500);--action-disabled-opacity:.5;
+/* Steps + status */
+--step-1:var(--brand-yellow);--step-2:var(--grey-700);--step-3:var(--brand-black);--alert-bg:var(--brand-yellow);--alert-fg:var(--brand-black);--focus-ring:rgba(255,186,0,.5);
+--icon-filter-brand:invert(99%) sepia(31%) saturate(4773%) hue-rotate(312deg) brightness(86%) contrast(116%);
+--icon-filter-white:brightness(0) invert(1);
+--icon-filter-black:invert(1);
+
+/* Type ramp */
+--font-size-hero:80px;--line-height-hero:1;
+--font-size-h1:48px;--line-height-h1:1.25;
+--font-size-h2:37px;--line-height-h2:1.41;
+--font-size-h3:31px;--line-height-h3:1.55;
+--font-size-h4:26px;--line-height-h4:1.38;
+--font-size-lead:24px;--line-height-lead:1.5;
+--font-size-h5:21px;--line-height-h5:1.52;
+--font-size-body:18px;--line-height-body:1.44;
+--font-size-body-loose:18px;--line-height-body-loose:1.78;
+--font-size-small:16px;--line-height-small:1.38;
+--font-size-button:16px;--line-height-button:normal;
+--font-size-button-sm:14px;
+--font-size-xsmall:12px;--line-height-xsmall:1.67;
+--font-size-tiny:10px;--line-height-tiny:1.6;
+--font-size-hero-model-name:2.8rem;--font-size-hero-subhead:4rem;--font-size-hero-price:1.938rem;
+--font-size-section-title:2.313rem;--font-size-card-title:17px;--font-size-meta:.688rem;
+--letter-spacing-default:normal;--text-transform-cta:uppercase;
+
+/* Spacing */
+--space-1:4px;--space-2:8px;--space-3:10px;--space-4:14px;--space-5:15px;--space-6:16px;--space-7:20px;--space-8:21px;--space-9:24px;--space-10:30px;--space-11:32px;--space-12:38px;--space-13:50px;--space-14:54px;--space-15:60px;--space-16:64px;--space-17:70px;
+--section-padding-y:50px;--section-padding-y-mobile:32px;
+--page-gutter:54px;--page-gutter-right:38px;--page-gutter-mobile:24px;
+--hero-padding:3.5rem 10rem 0;--footer-padding:32px 21px;
+--container-max:1440px;
+--radius-none:0;--radius-input:4px;--radius-dropdown:5px;--radius-card:10px;--radius-chip:15px;--radius-pill:100px;
+--control-height:40px;--control-height-sm:31px;--control-height-field:44px;--button-padding:7px 16px 8px;--button-padding-cta:.375rem 1.3rem;--button-padding-mobile:5px 16px;--icon-size:24px;--icon-size-mobile:20px;--header-logo-height:41px;--header-logo-height-mobile:31px;
+
+/* Elevation */
+--shadow-none:none;--shadow-pill:0 1px 3px 0 rgba(48,49,51,.1);--shadow-tile:.1px .2px 1px .1px #212121;--shadow-focus-brand:0 0 0 .2rem rgba(255,186,0,.5);--overlay-scrim:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.55) 100%);
+
+/* Motion */
+--duration-cta:.5s;--duration-fast:.2s;--easing-default:ease;--transition-cta:all .5s ease;--transition-color:color .2s ease,background-color .2s ease;
+}
+
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{margin:0;background:var(--surface-page);font-family:var(--font-brand),Roboto,sans-serif;color:var(--grey-850)}
+a{color:var(--grey-850);text-decoration:none}
+a:hover{color:var(--brand-yellow)}
+button,input,select{font-family:inherit}
+
+@keyframes omFlash{0%{background:var(--brand-yellow)}100%{background:transparent}}
+@keyframes omShimmer{0%{opacity:.35}50%{opacity:.9}100%{opacity:.35}}
+@keyframes omSlide{from{transform:translateX(24px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes omRise{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
