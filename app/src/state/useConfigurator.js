@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TRIMS, COLORS, WHEELS, INTERIORS, PACKS, OPTIONS, STEPS, VAT, FEES, KEY, money, byId } from "../data/catalogue";
+import { framesFor } from "../data/rotate360";
 import wranglerImg from "../assets/jeep/wrangler.png";
 import stockImg from "../assets/jeep/stock-a.jpg";
 
@@ -147,6 +148,15 @@ export function useConfigurator({ startStep = "color", defaultMode = "finance", 
     stateRef.current = merged;
     setStateRaw(merged);
   }
+
+  useEffect(() => {
+    if (state.view !== "exterior") return;
+    const frames = framesFor(state.color);
+    frames.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
+  }, [state.color, state.view]);
 
   useEffect(() => {
     let restored = false;
@@ -327,6 +337,11 @@ export function useConfigurator({ startStep = "color", defaultMode = "finance", 
     const carScale = (isInterior ? 2.6 : 1) * zoomScale * (s.view === "wheel" ? 2.4 : 1);
     const carShift = s.view === "wheel" ? "22%" : isInterior ? "-6%" : "0%";
 
+    const rotateFrames = s.view === "exterior" ? framesFor(color.id) : [];
+    const has360 = rotateFrames.length > 0;
+    const rotateMax = has360 ? rotateFrames.length - 1 : 35;
+    const rotationIndex = Math.min(s.rotation, rotateMax);
+
     const infoItem = s.infoItem || {};
     const benefit =
       {
@@ -419,33 +434,48 @@ export function useConfigurator({ startStep = "color", defaultMode = "finance", 
       ],
       zoomLabel: s.zoom ? "Zoom out" : "Zoom in",
       toggleZoom: () => patchState({ zoom: !s.zoom }),
-      setRotation: (v) => patchState({ rotation: Number(v) }),
+      setRotation: (v) => patchState({ rotation: Math.max(0, Math.min(rotateMax, Math.round(Number(v)))) }),
 
+      has360,
+      rotateMax,
+      rotationIndex,
       wranglerImg,
-      carImgStyle: {
-        display: "block",
-        width: "100%",
-        height: "auto",
-        filter: "brightness(" + (1.05 + (1 - color.mult) * 1.5) + ") contrast(" + (0.82 + color.mult * 0.3) + ") saturate(0.35)",
-        transform: "scale(" + carScale + ") translateX(" + carShift + ") rotateY(" + (s.rotation - 8) * 2.2 + "deg)",
-        transformOrigin: "50% 55%",
-        transition: "transform .35s ease, filter .35s ease",
-      },
-      paintOverlayStyle: {
-        position: "absolute",
-        inset: 0,
-        pointerEvents: "none",
-        background: color.hex,
-        opacity: 0.62,
-        mixBlendMode: "multiply",
-        WebkitMaskImage: `url(${wranglerImg})`,
-        maskImage: `url(${wranglerImg})`,
-        WebkitMaskSize: "100% 100%",
-        maskSize: "100% 100%",
-        transform: "scale(" + carScale + ") translateX(" + carShift + ") rotateY(" + (s.rotation - 8) * 2.2 + "deg)",
-        transformOrigin: "50% 55%",
-        transition: "transform .35s ease, background .25s ease",
-      },
+      imgSrc: has360 ? rotateFrames[rotationIndex] : wranglerImg,
+      carImgStyle: has360
+        ? {
+            display: "block",
+            width: "100%",
+            height: "auto",
+            transform: "scale(" + carScale + ") translateX(" + carShift + ")",
+            transformOrigin: "50% 55%",
+            transition: "transform .35s ease",
+          }
+        : {
+            display: "block",
+            width: "100%",
+            height: "auto",
+            filter: "brightness(" + (1.05 + (1 - color.mult) * 1.5) + ") contrast(" + (0.82 + color.mult * 0.3) + ") saturate(0.35)",
+            transform: "scale(" + carScale + ") translateX(" + carShift + ") rotateY(" + (s.rotation - 8) * 2.2 + "deg)",
+            transformOrigin: "50% 55%",
+            transition: "transform .35s ease, filter .35s ease",
+          },
+      paintOverlayStyle: has360
+        ? null
+        : {
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            background: color.hex,
+            opacity: 0.62,
+            mixBlendMode: "multiply",
+            WebkitMaskImage: `url(${wranglerImg})`,
+            maskImage: `url(${wranglerImg})`,
+            WebkitMaskSize: "100% 100%",
+            maskSize: "100% 100%",
+            transform: "scale(" + carScale + ") translateX(" + carShift + ") rotateY(" + (s.rotation - 8) * 2.2 + "deg)",
+            transformOrigin: "50% 55%",
+            transition: "transform .35s ease, background .25s ease",
+          },
 
       retryStock: () => patchState({ stockDown: false }),
       simulateOutage: () => {
