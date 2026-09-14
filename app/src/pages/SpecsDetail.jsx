@@ -1,7 +1,10 @@
+import { useEffect, useRef, useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { SpecsTopBar } from "../components/SpecsTopBar";
+import { CinematicScene } from "../components/specs/CinematicScene";
+import { Reveal, DisplayHeading, StatRail, Icon, ArrowRight, DownloadIcon } from "../components/specs/primitives";
+import { useIsVisible } from "../hooks/useMotion";
 import { Footer } from "../design-system/Footer";
-import { Button } from "../design-system/Button";
 import { MODELS, byModelId, money } from "../data/models";
 import { downloadModelSpecPdf } from "../lib/generateSpecPdf";
 import wranglerImg from "../assets/jeep/wrangler.png";
@@ -10,61 +13,208 @@ import logoAlFuttaim from "../assets/jeep/logo-alfuttaim-te.png";
 
 export function SpecsDetail() {
   const { modelId } = useParams();
-  const modelExists = MODELS.some((m) => m.id === modelId);
-  if (!modelExists) return <Navigate to="/specs" replace />;
+  const exists = MODELS.some((m) => m.id === modelId);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [modelId]);
+
+  // Sticky bar mirrors the hero CTA once it scrolls out of view.
+  const [heroCtaRef, heroCtaVisible] = useIsVisible();
+
+  // The bar is position:fixed, so it never reserves its own space — measure it
+  // and pad the page, otherwise it sits on top of the last section.
+  const stickyRef = useRef(null);
+  const [stickyHeight, setStickyHeight] = useState(0);
+  useEffect(() => {
+    const el = stickyRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setStickyHeight(entry.contentRect.height));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  if (!exists) return <Navigate to="/specs" replace />;
   const model = byModelId(modelId);
+  const others = MODELS.filter((m) => m.id !== model.id);
+  const showSticky = !heroCtaVisible;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#ffffff" }}>
-      <SpecsTopBar backTo="/specs" backLabel="← All models" />
+    <div className="spx" style={{ paddingBottom: stickyHeight }}>
+      <SpecsTopBar backTo="/specs" backLabel="All models" />
 
-      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "40px 24px 64px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,360px),1fr))", gap: 40, alignItems: "start" }}>
-          <div style={{ background: "#eeeeee", padding: 24, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <img src={wranglerImg} alt={model.name} style={{ width: "100%", height: "auto", display: "block" }} />
-          </div>
-
-          <div>
-            <span style={{ fontSize: 12, color: "#888b8d", textTransform: "uppercase" }}>{model.bodyStyle}</span>
-            <h1 style={{ margin: "4px 0 4px", fontSize: 37, fontWeight: 700, textTransform: "uppercase", lineHeight: 1.25 }}>{model.name}</h1>
-            <div style={{ width: "3.2em", height: 3, background: "#ffba00", marginBottom: 16 }} />
-            <p style={{ margin: "0 0 20px", fontSize: 15, color: "#636363", lineHeight: 1.5 }}>{model.tagline}</p>
-
-            <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 24 }}>
-              <span style={{ fontSize: 12, color: "#888b8d", textTransform: "uppercase" }}>Starting from</span>
-              <span style={{ fontSize: 26, fontWeight: 700 }}>{money(model.startingPrice)}</span>
-            </div>
-
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-              <Button variant="primary" size="lg" onClick={() => downloadModelSpecPdf(model)} style={{ flex: "1 1 200px" }}>
-                PDF download
-              </Button>
-              {model.hasConfigurator ? (
-                <Button variant="tertiary" size="lg" href="/" style={{ flex: "1 1 200px", border: "1px solid #212121" }}>
-                  Configure this Wrangler
-                </Button>
-              ) : null}
-            </div>
-          </div>
+      <section className="spx-hero" aria-labelledby="spx-model-title">
+        <CinematicScene sceneId={model.scene} />
+        <div className="spx-hero-car">
+          <img src={wranglerImg} alt={`Jeep ${model.name}`} width="880" height="420" />
         </div>
+        <div className="spx-hero-inner">
+          <Reveal immediate>
+            <span className="spx-eyebrow">{model.bodyStyle}</span>
+          </Reveal>
+          <DisplayHeading immediate id="spx-model-title" lines={[model.name]} />
+          <Reveal immediate delay={200}>
+            <p className="spx-lede">{model.tagline}</p>
+          </Reveal>
+          <Reveal immediate delay={320}>
+            <div ref={heroCtaRef} style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 28, alignItems: "center" }}>
+              <button type="button" className="spx-btn spx-btn-primary" onClick={() => downloadModelSpecPdf(model)}>
+                <DownloadIcon />
+                PDF download
+              </button>
+              {model.hasConfigurator ? (
+                <Link to="/" className="spx-btn spx-btn-ghost">
+                  Build yours
+                  <ArrowRight />
+                </Link>
+              ) : null}
+              <span style={{ marginLeft: 6, fontSize: 13, color: "var(--spx-muted)" }}>
+                From <strong style={{ color: "var(--spx-fg)", fontVariantNumeric: "tabular-nums" }}>{money(model.startingPrice)}</strong>
+              </span>
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
-        <div style={{ marginTop: 48 }}>
-          <h2 style={{ margin: "0 0 16px", fontSize: 21, fontWeight: 700, textTransform: "uppercase" }}>Key specifications</h2>
-          <div>
-            {model.highlights.map((h, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 16, padding: "12px 0", borderBottom: "1px solid #eeeeee" }}>
-                <span style={{ fontSize: 14, color: "#636363" }}>{h.k}</span>
-                <span style={{ fontSize: 14, fontWeight: 500, textAlign: "right" }}>{h.v}</span>
+      <section className="spx-section" aria-label="Headline figures">
+        <div className="spx-shell">
+          <Reveal>
+            <StatRail stats={model.stats} />
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="spx-section" style={{ paddingTop: 0 }} aria-labelledby="spx-story-title">
+        <div className="spx-shell">
+          <Reveal>
+            <div className="spx-story">
+              <CinematicScene sceneId={model.story.scene} />
+              <div className="spx-story-inner">
+                <span className="spx-eyebrow">{model.story.kicker}</span>
+                <h2 className="spx-h2" id="spx-story-title">
+                  {model.story.title}
+                </h2>
+                <p className="spx-sub" style={{ fontSize: 16 }}>
+                  {model.story.body}
+                </p>
               </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="spx-section" style={{ paddingTop: 0 }} aria-labelledby="spx-features-title">
+        <div className="spx-shell">
+          <div className="spx-section-head">
+            <Reveal>
+              <span className="spx-eyebrow">What defines it</span>
+              <h2 className="spx-h2" id="spx-features-title">
+                Built around four ideas
+              </h2>
+            </Reveal>
+          </div>
+          <div className="spx-features">
+            {model.features.map((f, i) => (
+              <Reveal key={f.title} delay={i * 80}>
+                <article className="spx-feature">
+                  <span className="spx-feature-icon">
+                    <Icon name={f.icon} />
+                  </span>
+                  <h3>{f.title}</h3>
+                  <p>{f.body}</p>
+                </article>
+              </Reveal>
             ))}
           </div>
-          <p style={{ margin: "18px 0 0", fontSize: 12, color: "#888b8d", lineHeight: 1.44 }}>
-            Figures shown are indicative and may vary by exact configuration. Contact your nearest Al-Futtaim Jeep showroom to confirm specifications and pricing.
-          </p>
         </div>
-      </div>
+      </section>
 
-      <Footer logos={[logoJeep, logoAlFuttaim]} legal={["Privacy policy", "Terms of use", "Cookie settings"]} copyright="© Al-Futtaim 2026. All rights reserved" />
+      <section className="spx-section" style={{ paddingTop: 0 }} aria-labelledby="spx-specs-title">
+        <div className="spx-shell">
+          <div className="spx-section-head">
+            <Reveal>
+              <span className="spx-eyebrow">The detail</span>
+              <h2 className="spx-h2" id="spx-specs-title">
+                Full specification
+              </h2>
+            </Reveal>
+          </div>
+          <dl style={{ margin: 0 }}>
+            {model.highlights.map((h, i) => (
+              <Reveal key={h.k} delay={Math.min(i, 7) * 50}>
+                <div className="spx-spec-row">
+                  <dt>{h.k}</dt>
+                  <dd>{h.v}</dd>
+                </div>
+              </Reveal>
+            ))}
+          </dl>
+          <Reveal>
+            <p style={{ margin: "22px 0 0", fontSize: 12, lineHeight: 1.6, color: "var(--spx-muted)", maxWidth: "70ch" }}>
+              Figures shown are indicative and may vary by exact configuration. Contact your nearest Al-Futtaim Jeep
+              showroom to confirm specifications and pricing.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="spx-section" style={{ paddingTop: 0 }} aria-labelledby="spx-more-title">
+        <div className="spx-shell">
+          <div className="spx-section-head">
+            <Reveal>
+              <span className="spx-eyebrow">Keep looking</span>
+              <h2 className="spx-h2" id="spx-more-title">
+                Other models
+              </h2>
+            </Reveal>
+          </div>
+          <Reveal>
+            <div className="spx-rail">
+              {others.map((m) => (
+                <Link key={m.id} to={`/specs/${m.id}`} className="spx-card" style={{ minHeight: 260 }} aria-label={`${m.name} specifications`}>
+                  <CinematicScene sceneId={m.scene} className="spx-card-media" parallax={false} />
+                  <span className="spx-card-scrim" aria-hidden="true" />
+                  <img className="spx-card-car" src={wranglerImg} alt="" aria-hidden="true" loading="lazy" />
+                  <h3 className="spx-card-name" style={{ fontSize: 22 }}>
+                    {m.name}
+                  </h3>
+                  <div className="spx-card-foot">
+                    <div>
+                      <span className="spx-card-price-label">From</span>
+                      <span className="spx-card-price">{money(m.startingPrice)}</span>
+                    </div>
+                    <span className="spx-card-go" aria-hidden="true">
+                      <ArrowRight />
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <Footer
+        logos={[logoJeep, logoAlFuttaim]}
+        legal={["Privacy policy", "Terms of use", "Cookie settings"]}
+        copyright="© Al-Futtaim 2026. All rights reserved"
+      />
+
+      <div ref={stickyRef} className="spx-sticky" data-show={showSticky ? "true" : "false"} aria-hidden={showSticky ? "false" : "true"}>
+        <div className="spx-sticky-meta">
+          <div className="spx-sticky-name">{model.name}</div>
+          <div className="spx-sticky-price">From {money(model.startingPrice)}</div>
+        </div>
+        <button
+          type="button"
+          className="spx-btn spx-btn-primary"
+          onClick={() => downloadModelSpecPdf(model)}
+          tabIndex={showSticky ? 0 : -1}
+        >
+          <DownloadIcon />
+          PDF download
+        </button>
+      </div>
     </div>
   );
 }

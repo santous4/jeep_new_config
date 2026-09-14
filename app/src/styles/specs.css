@@ -1,0 +1,688 @@
+/* ===========================================================================
+   Specs experience — dark cinematic editorial + bento grid.
+   Scoped under .spx- to avoid touching the configurator's inline-styled UI.
+   Palette contrast verified against --spx-bg: fg 17.9:1, muted 7.8:1,
+   accent 11.4:1, black-on-accent 12.1:1 (all >= WCAG AA).
+   =========================================================================== */
+
+.spx {
+  --spx-bg: #0a0a0c;
+  --spx-bg-deep: #050506;
+  --spx-surface: rgba(255, 255, 255, 0.04);
+  --spx-surface-hi: rgba(255, 255, 255, 0.07);
+  --spx-border: rgba(255, 255, 255, 0.1);
+  --spx-border-hi: rgba(255, 255, 255, 0.22);
+  --spx-fg: #f4f4f5;
+  --spx-muted: #a1a1aa;
+  --spx-accent: #ffba00;
+  --spx-accent-dim: rgba(255, 186, 0, 0.14);
+
+  --spx-radius: 16px;
+  --spx-radius-sm: 10px;
+  --spx-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --spx-fast: 200ms;
+  --spx-mid: 420ms;
+  --spx-slow: 700ms;
+
+  --spx-gutter: 24px;
+  --spx-max: 1280px;
+  --spx-topbar-h: 64px;
+
+  background: var(--spx-bg);
+  color: var(--spx-fg);
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+@media (min-width: 768px) {
+  .spx { --spx-gutter: 40px; }
+}
+
+.spx-shell {
+  max-width: var(--spx-max);
+  margin: 0 auto;
+  padding-inline: var(--spx-gutter);
+}
+
+/* --- Motion primitives -------------------------------------------------- */
+
+.spx-reveal {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition: opacity var(--spx-slow) var(--spx-ease), transform var(--spx-slow) var(--spx-ease);
+  will-change: opacity, transform;
+}
+.spx-reveal[data-in="true"] {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+@keyframes spxFloat {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -14px, 0); }
+}
+@keyframes spxScrollCue {
+  0% { transform: translateY(0); opacity: 0; }
+  35% { opacity: 1; }
+  100% { transform: translateY(14px); opacity: 0; }
+}
+@keyframes spxGrainShift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2%, 1%); }
+  50% { transform: translate(1%, -2%); }
+  75% { transform: translate(2%, 2%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* --- Cinematic scene ---------------------------------------------------- */
+
+.spx-scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+.spx-scene-sky { position: absolute; inset: 0; }
+.spx-scene-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(46px);
+  opacity: 0.55;
+}
+.spx-scene-layer {
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  bottom: 0;
+  width: 108%;
+  display: block;
+  will-change: transform;
+}
+.spx-scene-haze {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.spx-scene-grain {
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  animation: spxGrainShift 7s steps(4, end) infinite;
+}
+.spx-scene-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- Hero --------------------------------------------------------------- */
+
+/* The top bar is sticky but still in flow, so a full-viewport hero would push
+   its own last line past the fold. Subtract the bar's height. */
+.spx-hero {
+  position: relative;
+  min-height: calc(100vh - var(--spx-topbar-h));
+  min-height: calc(100svh - var(--spx-topbar-h));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+.spx-hero-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: var(--spx-max);
+  margin: 0 auto;
+  padding: 0 var(--spx-gutter) clamp(48px, 9vh, 96px);
+}
+/* Centred by auto margins, never by transform — the float keyframes own
+   transform outright and would otherwise wipe out a translateX(-50%). */
+.spx-hero-car {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 16%;
+  width: min(92%, 860px);
+  margin-inline: auto;
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 40px 60px rgba(0, 0, 0, 0.7));
+  animation: spxFloat 7s ease-in-out infinite;
+}
+.spx-hero-car img { display: block; width: 100%; height: auto; }
+
+.spx-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--spx-accent);
+}
+.spx-eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 2px;
+  background: var(--spx-accent);
+}
+
+.spx-display {
+  margin: 16px 0 0;
+  font-size: clamp(44px, 11vw, 132px);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+.spx-display-line { display: block; overflow: hidden; }
+.spx-display-line > span {
+  display: block;
+  transform: translateY(105%);
+  transition: transform 900ms var(--spx-ease);
+}
+[data-in="true"] .spx-display-line > span { transform: none; }
+
+.spx-lede {
+  margin: 20px 0 0;
+  max-width: 54ch;
+  font-size: clamp(15px, 1.6vw, 18px);
+  line-height: 1.6;
+  color: var(--spx-muted);
+}
+
+.spx-scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--spx-muted);
+}
+.spx-scroll-cue svg { animation: spxScrollCue 1.8s var(--spx-ease) infinite; }
+
+/* --- Section furniture -------------------------------------------------- */
+
+.spx-section { position: relative; padding-block: clamp(64px, 11vh, 128px); }
+.spx-section-head { margin-bottom: clamp(28px, 4vw, 48px); }
+.spx-h2 {
+  margin: 12px 0 0;
+  font-size: clamp(28px, 4.4vw, 52px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.spx-sub {
+  margin: 14px 0 0;
+  max-width: 60ch;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--spx-muted);
+}
+
+/* --- Segmented filter --------------------------------------------------- */
+
+.spx-segment {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--spx-surface);
+  border: 1px solid var(--spx-border);
+  border-radius: 100px;
+  flex-wrap: wrap;
+}
+.spx-segment button {
+  position: relative;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 100px;
+  background: transparent;
+  color: var(--spx-muted);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--spx-fast) var(--spx-ease), background var(--spx-fast) var(--spx-ease);
+}
+.spx-segment button:hover { color: var(--spx-fg); }
+.spx-segment button[aria-pressed="true"] {
+  background: var(--spx-accent);
+  color: #000;
+}
+
+/* --- Bento lineup grid -------------------------------------------------- */
+
+.spx-bento {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media (min-width: 900px) {
+  .spx-bento { grid-template-columns: repeat(6, 1fr); gap: 20px; }
+  .spx-card-wide { grid-column: span 4; }
+  .spx-card-tall { grid-column: span 2; }
+  .spx-card-std { grid-column: span 2; }
+}
+@media (max-width: 899px) {
+  .spx-bento { grid-template-columns: 1fr; }
+}
+
+/* The revealed wrapper is the grid item; the card fills it. Span + min-height
+   live on the cell so the reveal transform still applies to a real box. */
+.spx-cell { min-height: 300px; }
+.spx-cell.spx-card-wide { min-height: 420px; }
+
+.spx-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  min-height: inherit;
+  padding: 24px;
+  border: 1px solid var(--spx-border);
+  border-radius: var(--spx-radius);
+  background: var(--spx-bg-deep);
+  overflow: hidden;
+  isolation: isolate;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform var(--spx-mid) var(--spx-ease), border-color var(--spx-mid) var(--spx-ease),
+    box-shadow var(--spx-mid) var(--spx-ease);
+}
+.spx-card:hover,
+.spx-card:focus-visible {
+  transform: translateY(-6px);
+  border-color: var(--spx-border-hi);
+  box-shadow: 0 28px 60px -20px rgba(0, 0, 0, 0.9);
+}
+.spx-card-media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  transition: transform var(--spx-slow) var(--spx-ease);
+}
+.spx-card:hover .spx-card-media { transform: scale(1.06); }
+.spx-card-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(5, 5, 6, 0.1) 0%, rgba(5, 5, 6, 0.62) 52%, rgba(5, 5, 6, 0.94) 100%);
+}
+.spx-card-car {
+  position: absolute;
+  right: -6%;
+  bottom: 26%;
+  width: 78%;
+  z-index: -1;
+  pointer-events: none;
+  filter: drop-shadow(0 22px 34px rgba(0, 0, 0, 0.75));
+  transition: transform var(--spx-slow) var(--spx-ease);
+}
+.spx-card:hover .spx-card-car { transform: translateY(-8px) scale(1.04); }
+.spx-card-wide .spx-card-car { width: 62%; right: 2%; }
+
+.spx-card-tag {
+  align-self: flex-start;
+  margin-bottom: auto;
+  padding: 5px 11px;
+  border-radius: 100px;
+  background: rgba(10, 10, 12, 0.62);
+  border: 1px solid var(--spx-border);
+  backdrop-filter: blur(8px);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--spx-fg);
+}
+.spx-card-name {
+  margin: 0;
+  font-size: clamp(24px, 3.2vw, 38px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.spx-card-tagline {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--spx-muted);
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height var(--spx-mid) var(--spx-ease), opacity var(--spx-mid) var(--spx-ease),
+    margin var(--spx-mid) var(--spx-ease);
+}
+.spx-card:hover .spx-card-tagline,
+.spx-card:focus-visible .spx-card-tagline {
+  max-height: 80px;
+  opacity: 1;
+}
+.spx-card-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--spx-border);
+}
+.spx-card-price-label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--spx-muted);
+}
+.spx-card-price { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.spx-card-go {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--spx-border-hi);
+  color: var(--spx-fg);
+  transition: background var(--spx-fast) var(--spx-ease), color var(--spx-fast) var(--spx-ease),
+    transform var(--spx-fast) var(--spx-ease);
+}
+.spx-card:hover .spx-card-go {
+  background: var(--spx-accent);
+  border-color: var(--spx-accent);
+  color: #000;
+  transform: translateX(4px);
+}
+
+/* --- Stat rail ---------------------------------------------------------- */
+
+.spx-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--spx-border);
+  border: 1px solid var(--spx-border);
+  border-radius: var(--spx-radius);
+  overflow: hidden;
+}
+@media (min-width: 720px) {
+  .spx-stats { grid-template-columns: repeat(4, 1fr); }
+}
+.spx-stat { background: var(--spx-bg); padding: 24px 20px; }
+.spx-stat-value {
+  font-size: clamp(30px, 4.6vw, 52px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.spx-stat-unit { font-size: 0.42em; font-weight: 500; color: var(--spx-muted); margin-left: 4px; }
+.spx-stat-label {
+  margin-top: 10px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--spx-muted);
+}
+
+/* --- Feature bento ------------------------------------------------------ */
+
+.spx-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 16px;
+}
+.spx-feature {
+  padding: 26px 24px;
+  border: 1px solid var(--spx-border);
+  border-radius: var(--spx-radius);
+  background: var(--spx-surface);
+  transition: background var(--spx-mid) var(--spx-ease), border-color var(--spx-mid) var(--spx-ease),
+    transform var(--spx-mid) var(--spx-ease);
+}
+.spx-feature:hover {
+  background: var(--spx-surface-hi);
+  border-color: var(--spx-border-hi);
+  transform: translateY(-4px);
+}
+.spx-feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 18px;
+  border-radius: 12px;
+  background: var(--spx-accent-dim);
+  color: var(--spx-accent);
+}
+.spx-feature h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.spx-feature p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--spx-muted); }
+
+/* --- Spec table --------------------------------------------------------- */
+
+.spx-spec-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--spx-border);
+}
+.spx-spec-row dt { font-size: 14px; color: var(--spx-muted); }
+.spx-spec-row dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Story band --------------------------------------------------------- */
+
+.spx-story {
+  position: relative;
+  min-height: 78vh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  border-radius: var(--spx-radius);
+  isolation: isolate;
+}
+.spx-story-inner { position: relative; z-index: 2; padding: clamp(28px, 5vw, 64px); max-width: 64ch; }
+
+/* --- Buttons ------------------------------------------------------------ */
+
+.spx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 26px;
+  border: 1px solid transparent;
+  border-radius: 100px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--spx-fast) var(--spx-ease), color var(--spx-fast) var(--spx-ease),
+    border-color var(--spx-fast) var(--spx-ease), transform var(--spx-fast) var(--spx-ease);
+}
+.spx-btn:active { transform: scale(0.975); }
+.spx-btn-primary { background: var(--spx-accent); color: #000; }
+.spx-btn-primary:hover { background: #ffc933; }
+.spx-btn-ghost { background: transparent; color: var(--spx-fg); border-color: var(--spx-border-hi); }
+.spx-btn-ghost:hover { background: var(--spx-surface-hi); border-color: var(--spx-fg); }
+
+/* --- Sticky action bar -------------------------------------------------- */
+
+.spx-sticky {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px var(--spx-gutter);
+  background: rgba(10, 10, 12, 0.82);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--spx-border);
+  transform: translateY(105%);
+  transition: transform var(--spx-mid) var(--spx-ease);
+  padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+}
+.spx-sticky[data-show="true"] { transform: none; }
+.spx-sticky-meta { flex: 1 1 200px; min-width: 0; }
+.spx-sticky-name {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.spx-sticky-price { font-size: 12px; color: var(--spx-muted); font-variant-numeric: tabular-nums; }
+
+/* --- Top bar ------------------------------------------------------------ */
+
+.spx-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  height: 64px;
+  padding-inline: var(--spx-gutter);
+  background: rgba(10, 10, 12, 0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--spx-border);
+}
+.spx-topbar a { text-decoration: none; }
+.spx-topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  min-height: 44px;
+  padding-inline: 2px;
+}
+.spx-topbar-brand img { height: 20px; width: auto; display: block; flex: none; }
+.spx-topbar-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--spx-fg);
+  white-space: nowrap;
+}
+.spx-topbar-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding-inline: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--spx-muted);
+  white-space: nowrap;
+  transition: color var(--spx-fast) var(--spx-ease);
+}
+.spx-topbar-back:hover { color: var(--spx-accent); }
+
+/* --- Small screens ------------------------------------------------------ */
+
+@media (max-width: 600px) {
+  /* Logo + back link only: the wordmark and the link collide below this. */
+  .spx-topbar-title { display: none; }
+  .spx-topbar { gap: 12px; }
+  .spx-hero-inner { padding-bottom: 40px; }
+  .spx-lede { font-size: 14px; margin-top: 14px; }
+  .spx-hero-car { bottom: 22%; width: 104%; max-width: none; }
+  .spx-scroll-cue { display: none; }
+  .spx-btn { width: 100%; }
+  .spx-sticky .spx-btn { width: auto; }
+}
+
+/* --- Related rail ------------------------------------------------------- */
+
+.spx-rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(230px, 1fr);
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+.spx-rail::-webkit-scrollbar { display: none; }
+.spx-rail > * { scroll-snap-align: start; }
+
+/* --- Focus + motion preferences ----------------------------------------- */
+
+.spx :focus-visible {
+  outline: 3px solid var(--spx-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spx-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .spx-display-line > span { transform: none; transition: none; }
+  .spx-hero-car,
+  .spx-scene-grain,
+  .spx-scroll-cue svg { animation: none; }
+  .spx-card,
+  .spx-card-media,
+  .spx-card-car,
+  .spx-feature,
+  .spx-card-go,
+  .spx-sticky { transition: none; }
+  .spx-card:hover { transform: none; }
+  .spx-card:hover .spx-card-media,
+  .spx-card:hover .spx-card-car { transform: none; }
+  .spx-card-tagline { max-height: 80px; opacity: 1; }
+  .spx-scene-layer { transform: none !important; }
+}

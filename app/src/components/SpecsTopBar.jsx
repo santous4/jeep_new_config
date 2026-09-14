@@ -3,16 +3,23 @@ import logoJeep from "../assets/jeep/logo-jeep-white.png";
 
 export function SpecsTopBar({ backTo, backLabel }) {
   return (
-    <header style={{ background: "#000000", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24, padding: "0 24px", height: 64 }}>
-      <Link to="/" style={{ display: "flex", alignItems: "center", gap: 20, textDecoration: "none" }}>
-        <img src={logoJeep} alt="Jeep" style={{ height: 22, width: "auto", display: "block" }} />
-        <span style={{ color: "#ffffff", fontSize: 14, fontWeight: 700, textTransform: "uppercase" }}>Vehicle Specifications</span>
+    <header className="spx-topbar">
+      <Link to="/" className="spx-topbar-brand">
+        <img src={logoJeep} alt="Jeep" />
+        <span className="spx-topbar-title">Specifications</span>
       </Link>
       {backTo ? (
-        <Link to={backTo} style={{ color: "rgba(255,255,255,.85)", fontSize: 13, fontWeight: 700, textTransform: "uppercase", textDecoration: "none" }}>
+        <Link to={backTo} className="spx-topbar-back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M19 12H5M11 18l-6-6 6-6" />
+          </svg>
           {backLabel}
         </Link>
-      ) : null}
+      ) : (
+        <Link to="/" className="spx-topbar-back">
+          Configure a Wrangler
+        </Link>
+      )}
     </header>
   );
 }
