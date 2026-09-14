@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import logoJeep from "../assets/jeep/logo-jeep-white.png";
 
 export function Header({ vm }) {
@@ -21,6 +22,9 @@ export function Header({ vm }) {
         <button onClick={vm.startOver} style={{ flexShrink: 0, whiteSpace: "nowrap", background: "transparent", border: 0, color: "rgba(255,255,255,.7)", fontSize: 13, fontFamily: "inherit", cursor: "pointer", padding: "8px 10px" }}>
           Start over
         </button>
+        <Link to="/specs" style={{ flexShrink: 0, whiteSpace: "nowrap", color: "#ffba00", fontSize: 13, fontWeight: 700, textDecoration: "none", padding: "8px 10px" }}>
+          Download specs
+        </Link>
       </div>
     </header>
   );
