@@ -2,7 +2,7 @@ import whatsapp from "../assets/jeep/icons/WhatsApp.png";
 
 export function AssistFab({ vm }) {
   return (
-    <div style={{ position: "fixed", right: 16, bottom: 146, zIndex: 65, display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end" }}>
+    <div className="om-assist-fab" style={{ position: "fixed", right: 16, bottom: 146, zIndex: 75, display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end" }}>
       {vm.s.assistOpen ? (
         <div style={{ background: "#ffffff", border: "1px solid #e0e0e0", boxShadow: "0 1px 3px rgba(48,49,51,.1)", width: 240, padding: 14, display: "flex", flexDirection: "column", gap: 8, animation: "omRise .2s ease-out" }}>
           <span style={{ fontSize: 12, textTransform: "uppercase", fontWeight: 700, color: "#636363" }}>Need a hand?</span>

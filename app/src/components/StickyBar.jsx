@@ -19,7 +19,7 @@ export function StickyBar({ vm }) {
         </div>
       ) : null}
 
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16, padding: "12px 24px" }}>
+      <div className="om-sticky-row" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16, padding: "12px 24px" }}>
         <div style={{ flex: "1 1 240px", minWidth: 0, display: "flex", flexDirection: "column", gap: 3 }}>
           <span style={{ fontSize: 12, color: "rgba(255,255,255,.65)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{vm.specLine}</span>
           <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
@@ -29,7 +29,7 @@ export function StickyBar({ vm }) {
           </div>
         </div>
 
-        <div style={{ display: "flex", border: "1px solid rgba(255,255,255,.25)" }}>
+        <div className="om-sticky-tabs" style={{ display: "flex", border: "1px solid rgba(255,255,255,.25)" }}>
           <button onClick={vm.setCash} style={vm.cashTabStyle}>Cash</button>
           <button onClick={vm.setFinance} style={vm.financeTabStyle}>Finance</button>
           <button onClick={vm.setLease} style={vm.leaseTabStyle}>Lease</button>
@@ -38,7 +38,7 @@ export function StickyBar({ vm }) {
         <button onClick={vm.toggleBreakdown} style={{ background: "transparent", border: 0, color: "#ffffff", fontFamily: "inherit", fontSize: 13, textDecoration: "underline", cursor: "pointer", padding: "8px 4px" }}>
           {vm.breakdownLabel}
         </button>
-        <button onClick={vm.openFinance} style={{ background: "transparent", border: "1px solid rgba(255,255,255,.35)", color: "#ffffff", fontFamily: "inherit", fontSize: 13, fontWeight: 700, textTransform: "uppercase", padding: "11px 16px", cursor: "pointer" }}>
+        <button onClick={vm.openFinance} className="om-sticky-payment-btn" style={{ background: "transparent", border: "1px solid rgba(255,255,255,.35)", color: "#ffffff", fontFamily: "inherit", fontSize: 13, fontWeight: 700, textTransform: "uppercase", padding: "11px 16px", cursor: "pointer" }}>
           Payment options
         </button>
         <Button variant="primary" size="lg" onClick={vm.primaryAction} style={{ width: "auto", flex: "0 0 auto", padding: "0 26px" }}>

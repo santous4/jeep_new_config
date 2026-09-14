@@ -106,7 +106,7 @@ function Picker({ vm }) {
 
 export function OptionPanel({ vm }) {
   return (
-    <section style={{ background: "#ffffff", borderLeft: "1px solid #e0e0e0", minHeight: "60vh", padding: "28px 76px 40px 28px" }}>
+    <section className="om-option-panel" style={{ background: "#ffffff", borderLeft: "1px solid #e0e0e0", minHeight: "60vh", padding: "28px 76px 40px 28px" }}>
       {vm.isSummary ? <Summary vm={vm} /> : <Picker vm={vm} />}
     </section>
   );

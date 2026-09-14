@@ -33,10 +33,10 @@ export function Visualizer({ vm }) {
             {v.selected ? <span style={{ position: "absolute", inset: 0, boxShadow: "inset 0 0 0 2px #ffba00", pointerEvents: "none" }} /> : null}
           </button>
         ))}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto", minWidth: 220, flex: "1 1 220px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, marginLeft: "auto", minWidth: 0, flex: "1 1 220px" }}>
           <span style={{ fontSize: 11, textTransform: "uppercase", color: "#757575", whiteSpace: "nowrap" }}>Rotate 360°</span>
-          <input type="range" min="0" max="35" step="1" value={vm.s.rotation} onChange={(e) => vm.setRotation(e.target.value)} style={{ flex: 1, accentColor: "#ffba00" }} />
-          <button onClick={vm.toggleZoom} style={{ background: "#ffffff", border: "1px solid #e0e0e0", fontFamily: "inherit", fontSize: 12, textTransform: "uppercase", fontWeight: 700, padding: "8px 12px", cursor: "pointer" }}>
+          <input type="range" min="0" max="35" step="1" value={vm.s.rotation} onChange={(e) => vm.setRotation(e.target.value)} style={{ flex: 1, minWidth: 60, accentColor: "#ffba00" }} />
+          <button onClick={vm.toggleZoom} style={{ flexShrink: 0, background: "#ffffff", border: "1px solid #e0e0e0", fontFamily: "inherit", fontSize: 12, textTransform: "uppercase", fontWeight: 700, padding: "8px 12px", cursor: "pointer" }}>
             {vm.zoomLabel}
           </button>
         </div>

@@ -1,0 +1,51 @@
+/* Mobile fixes: the app is laid out with inline styles sized for desktop.
+   These overrides keep fixed/sticky chrome from overflowing or overlapping
+   on narrow viewports without touching the desktop layout. */
+
+.om-header-actions {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.om-header-actions::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .om-header-year {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .om-header {
+    gap: 12px !important;
+    padding: 0 12px !important;
+  }
+  .om-header-actions {
+    gap: 4px !important;
+  }
+  .om-header-actions button {
+    padding: 8px 8px !important;
+    font-size: 12px !important;
+  }
+
+  .om-option-panel {
+    padding: 20px 16px 32px !important;
+  }
+
+  .om-sticky-row {
+    padding: 10px 12px !important;
+    gap: 10px !important;
+  }
+  .om-sticky-tabs button {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+  }
+  .om-sticky-payment-btn {
+    display: none;
+  }
+
+  .om-assist-fab {
+    bottom: 210px !important;
+  }
+}
