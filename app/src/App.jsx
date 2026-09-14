@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useConfigurator } from "./state/useConfigurator";
 import { Header } from "./components/Header";
 import { ResumeBar, StockBar } from "./components/Bars";
@@ -14,9 +15,18 @@ import logoAlFuttaim from "./assets/jeep/logo-alfuttaim-te.png";
 
 export default function App({ startStep = "color", defaultMode = "finance", showMostChosen = true } = {}) {
   const vm = useConfigurator({ startStep, defaultMode, showMostChosen });
+  const [stickyHeight, setStickyHeight] = useState(0);
+
+  useEffect(() => {
+    const el = document.getElementById("om-sticky-bar");
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => setStickyHeight(entry.contentRect.height));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#ffffff", paddingBottom: 152 }}>
+    <div style={{ minHeight: "100vh", background: "#ffffff", paddingBottom: stickyHeight }}>
       <Header vm={vm} />
       <ResumeBar vm={vm} />
       <StockBar vm={vm} />

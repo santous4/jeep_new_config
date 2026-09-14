@@ -2,7 +2,7 @@ import { Button } from "../design-system/Button";
 
 export function StickyBar({ vm }) {
   return (
-    <div style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 70, background: "#000000", color: "#ffffff" }}>
+    <div id="om-sticky-bar" style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 70, background: "#000000", color: "#ffffff" }}>
       {vm.s.breakdownOpen ? (
         <div style={{ background: "#191920", borderBottom: "1px solid rgba(255,255,255,.1)", padding: "16px 24px", maxHeight: "46vh", overflow: "auto" }}>
           <div style={{ maxWidth: 720, margin: "0 auto" }}>
