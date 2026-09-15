@@ -48,4 +48,10 @@
   .om-assist-fab {
     bottom: 210px !important;
   }
+
+  /* The assist FAB is fixed bottom-right and was sitting on top of the zoom
+     button, making it unclickable. Keep this row clear of the FAB's column. */
+  .om-viz-controls {
+    padding-right: 76px !important;
+  }
 }

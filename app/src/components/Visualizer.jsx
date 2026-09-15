@@ -42,7 +42,9 @@ export function Visualizer({ vm }) {
         </button>
       </div>
 
-      <div style={{ position: "relative", padding: "24px 24px 8px", minHeight: 300, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+      {/* Real 360 frames are studio shots on white — match the stage to them so
+          the frame edge doesn't read as a pasted white box on the grey. */}
+      <div style={{ position: "relative", padding: "24px 24px 8px", minHeight: 300, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", background: vm.has360 ? "#ffffff" : "transparent", transition: "background .25s ease" }}>
         <div
           style={{ position: "relative", width: "100%", maxWidth: 760, isolation: "isolate", cursor: vm.rotateMax ? "grab" : "default", touchAction: "pan-y" }}
           onPointerDown={dragHandlers.onPointerDown}
@@ -62,7 +64,7 @@ export function Visualizer({ vm }) {
         </div>
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, padding: "8px 24px 20px" }}>
+      <div className="om-viz-controls" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, padding: "8px 24px 20px" }}>
         {vm.views.map((v) => (
           <button key={v.id} onClick={v.pick} style={{ position: "relative", background: "#ffffff", border: "1px solid #e0e0e0", fontFamily: "inherit", fontSize: 12, textTransform: "uppercase", fontWeight: 700, color: "#636363", padding: "8px 14px", cursor: "pointer" }}>
             {v.label}

@@ -1,7 +1,7 @@
 // Auto-discovers 360° turntable frames dropped into src/assets/jeep/360/<colorId>/<n>.ext
 // See src/assets/jeep/360/README.md for the naming convention. No code change is
 // needed to add real frames — this glob picks them up at build time.
-const modules = import.meta.glob("../assets/jeep/360/*/*.{jpg,jpeg,png,webp}", { eager: true, import: "default" });
+const modules = import.meta.glob("../assets/jeep/360/*/*.{jpg,jpeg,png,webp,avif}", { eager: true, import: "default" });
 
 function parseFramePath(path) {
   const m = path.match(/360\/([^/]+)\/(\d+)\.[a-zA-Z]+$/);
