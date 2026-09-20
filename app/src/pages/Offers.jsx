@@ -1,21 +1,12 @@
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { SpecsTopBar } from "../components/SpecsTopBar";
-import { CinematicScene } from "../components/specs/CinematicScene";
-import { Reveal, DisplayHeading, ArrowRight } from "../components/specs/primitives";
+import { ArrowRight } from "../components/specs/primitives";
 import { Footer } from "../design-system/Footer";
 import { OFFERS, CATEGORIES, SORTS, filterOffers, headline, urgency } from "../data/offers";
 import wranglerImg from "../assets/jeep/wrangler.png";
 import logoJeep from "../assets/jeep/logo-jeep-white.png";
 import logoAlFuttaim from "../assets/jeep/logo-alfuttaim-te.png";
-
-const SCENE_BY_CATEGORY = {
-  new: "dunes",
-  preowned: "coast",
-  aftersales: "mountain",
-  business: "city",
-  benefits: "camp",
-};
 
 function SearchIcon() {
   return (
@@ -41,10 +32,9 @@ function CheckIcon() {
   );
 }
 
-function OfferCard({ offer, index }) {
+function OfferCard({ offer }) {
   const head = headline(offer);
   const urg = urgency(offer);
-  const scene = SCENE_BY_CATEGORY[offer.category] || "dunes";
 
   // One descriptive accessible name per card. The live page repeats the literal
   // string "Get Offer" for every link, which tells a screen reader user nothing.
@@ -53,10 +43,8 @@ function OfferCard({ offer, index }) {
     : `${offer.title} offer — ${offer.perk || "view details"}`;
 
   return (
-    <Reveal delay={Math.min(index, 8) * 55} style={{ display: "flex" }}>
-      <Link to={offer.href} className={`ofr-card${offer.featured ? " ofr-card-featured" : ""}`} aria-label={label}>
+    <Link to={offer.href} className={`ofr-card${offer.featured ? " ofr-card-featured" : ""}`} aria-label={label}>
         <div className="ofr-media">
-          <CinematicScene sceneId={scene} parallax={false} />
           <div className="ofr-flags">
             {offer.featured ? <span className="ofr-flag ofr-flag-featured">Featured</span> : <span />}
             {urg && urg.level !== "open" ? (
@@ -114,8 +102,7 @@ function OfferCard({ offer, index }) {
             <ArrowRight size={16} />
           </span>
         </div>
-      </Link>
-    </Reveal>
+    </Link>
   );
 }
 
@@ -150,21 +137,19 @@ export function Offers() {
     <div className="spx">
       <SpecsTopBar title="Offers" backTo="/specs" backLabel="Specifications" />
 
-      {/* Deliberately short for a browse page: the job here is to get offers
-          above the fold, not to fill the viewport with a hero. */}
-      <section className="spx-hero" style={{ minHeight: "min(42vh, 380px)" }} aria-labelledby="ofr-title">
-        <CinematicScene sceneId="dunes" />
-        <div className="spx-hero-inner">
-          <Reveal immediate>
+      {/* Deliberately short for a browse page: the job is to get offers above
+          the fold, not to fill the viewport with a hero. */}
+      <section className="spx-hero" aria-labelledby="ofr-title">
+        <div className="spx-hero-inner" style={{ gridTemplateColumns: "1fr" }}>
+          <div>
             <span className="spx-eyebrow">Al-Futtaim Jeep · United Arab Emirates</span>
-          </Reveal>
-          <DisplayHeading immediate id="ofr-title" lines={["Current offers"]} />
-          <Reveal immediate delay={200}>
+            <h1 className="spx-display" id="ofr-title">Current offers</h1>
+            <div className="spx-rule" />
             <p className="spx-lede">
               Every live Jeep offer in one place — finance, pre-owned, servicing and parts. Filter by what you need,
               sort by what matters, and see exactly when each one ends.
             </p>
-          </Reveal>
+          </div>
         </div>
       </section>
 
@@ -237,8 +222,8 @@ export function Offers() {
           </div>
 
           <div className="ofr-grid">
-            {results.map((o, i) => (
-              <OfferCard key={o.id} offer={o} index={i} />
+            {results.map((o) => (
+              <OfferCard key={o.id} offer={o} />
             ))}
 
             {results.length === 0 ? (

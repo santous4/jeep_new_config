@@ -2,15 +2,14 @@
 // listings, not the dealer feed. Replace with the live catalogue service in
 // production.
 //
-// `scene` maps to an environment in data/scenes.js. `stats` drive the animated
-// counters (numeric values only). `highlights` drives the spec table and PDF.
+// `stats` drive the headline figures.
+// `highlights` drives the spec table and PDF.
 
 export const MODELS = [
   {
     id: "wrangler",
     name: "Wrangler",
     category: "SUV",
-    scene: "dunes",
     tagline: "The original 4x4. Open-air freedom with best-in-class off-road capability.",
     bodyStyle: "2-Door / 4-Door SUV",
     startingPrice: 192499,
@@ -25,7 +24,6 @@ export const MODELS = [
       { label: "Wading depth", value: 864, unit: "mm" },
     ],
     story: {
-      scene: "camp",
       kicker: "Built for the Empty Quarter",
       title: "Where the road ends, it begins",
       body: "Rock-Trac 4:1 low range, electronic front and rear lockers and a disconnecting sway bar let the Wrangler crawl terrain that stops everything else. Drop the doors, fold the windscreen and the desert stops being scenery.",
@@ -50,7 +48,6 @@ export const MODELS = [
     id: "gladiator",
     name: "Gladiator",
     category: "Pickup",
-    scene: "mountain",
     tagline: "The only open-air, off-road pickup truck. Wrangler capability with a bed.",
     bodyStyle: "4-Door Pickup",
     startingPrice: 219900,
@@ -63,7 +60,6 @@ export const MODELS = [
       { label: "Bed length", value: 1.53, unit: "m", decimals: 2 },
     ],
     story: {
-      scene: "mountain",
       kicker: "Work and weekend",
       title: "A bed that changes the maths",
       body: "A 1.53-metre cargo bed with a three-position tailgate and 3,470 kg of towing turns a weekend truck into a working one — without giving up the removable roof, doors or fold-down windscreen.",
@@ -88,7 +84,6 @@ export const MODELS = [
     id: "grand-cherokee",
     name: "Grand Cherokee",
     category: "SUV",
-    scene: "city",
     tagline: "The most awarded SUV ever, refined with luxury and advanced 4x4 systems.",
     bodyStyle: "5-Seat SUV",
     startingPrice: 229900,
@@ -103,7 +98,6 @@ export const MODELS = [
       { label: "Drive modes", value: 5, unit: "" },
     ],
     story: {
-      scene: "city",
       kicker: "Refinement, unrestricted",
       title: "Quiet enough for the city. Capable far past it.",
       body: "Quadra-Lift air suspension drops for the highway and lifts 274 mm for the dunes. Active noise cancellation and acoustic glass keep the cabin still while Quadra-Drive II shuffles torque to whichever wheel still has grip.",
@@ -128,7 +122,6 @@ export const MODELS = [
     id: "grand-cherokee-l",
     name: "Grand Cherokee L",
     category: "SUV",
-    scene: "coast",
     tagline: "Three rows of Grand Cherokee luxury and capability for the whole family.",
     bodyStyle: "7-Seat SUV",
     startingPrice: 249900,
@@ -141,7 +134,6 @@ export const MODELS = [
       { label: "Wheelbase", value: 3091, unit: "mm" },
     ],
     story: {
-      scene: "coast",
       kicker: "Seven up",
       title: "A third row nobody argues about",
       body: "A 3,091 mm wheelbase buys real space in row three and still leaves 487 litres behind it. Tri-pane panoramic roof overhead, 2,812 kg on the hitch behind.",
@@ -166,7 +158,6 @@ export const MODELS = [
     id: "compass",
     name: "Compass",
     category: "SUV",
-    scene: "city",
     tagline: "A compact SUV with Jeep 4x4 DNA, sized for the city and ready for the trail.",
     bodyStyle: "5-Seat Compact SUV",
     startingPrice: 109900,
@@ -179,7 +170,6 @@ export const MODELS = [
       { label: "Seats", value: 5, unit: "" },
     ],
     story: {
-      scene: "city",
       kicker: "City sized",
       title: "Small footprint, same badge",
       body: "Jeep Active Drive keeps the 4x4 promise in a body that still fits a mall car park. 199 mm of clearance and Selec-Terrain mean the weekend plan doesn't have to end at the tarmac.",

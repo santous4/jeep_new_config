@@ -1,50 +1,25 @@
-import { useEffect, useState } from "react";
-import { useInView, useCountUp } from "../../hooks/useMotion";
+// Presentational primitives for the specs/offers pages.
+//
+// These used to run scroll-reveals, a masked headline rise and count-up stats.
+// The Jeep UAE DS is explicit that "Animation is minimal ... No entrance
+// animations, no parallax, no bounce" and that "Interaction states are colour
+// inversions, not motion", so they now render statically. Reveal and
+// DisplayHeading keep their signatures so call sites stay unchanged.
 
-// Fires on mount instead of on scroll. Hero content is above the fold by
-// definition, so gating it on an intersection (with a negative rootMargin that
-// can exclude the lower fold) risks leaving it invisible.
-function useMountedIn(active) {
-  const [on, setOn] = useState(false);
-  useEffect(() => {
-    if (!active) return;
-    const id = requestAnimationFrame(() => setOn(true));
-    return () => cancelAnimationFrame(id);
-  }, [active]);
-  return on;
-}
-
-// Scroll-reveal wrapper. `delay` staggers siblings — keep it under ~8 items so
-// the last one doesn't feel laggy. `immediate` opts into the mount trigger.
-export function Reveal({ children, delay = 0, immediate = false, as: Tag = "div", className = "", style, ...rest }) {
-  const [ref, inView] = useInView();
-  const mounted = useMountedIn(immediate);
-  const shown = immediate ? mounted : inView;
+export function Reveal({ children, as: Tag = "div", className = "", style, delay, immediate, ...rest }) {
+  void delay;
+  void immediate;
   return (
-    <Tag
-      ref={immediate ? undefined : ref}
-      data-in={shown ? "true" : "false"}
-      className={`spx-reveal ${className}`}
-      style={{ transitionDelay: `${delay}ms`, ...style }}
-      {...rest}
-    >
+    <Tag className={className} style={style} {...rest}>
       {children}
     </Tag>
   );
 }
 
-// Masked line-by-line headline rise.
-export function DisplayHeading({ lines, className = "", id, immediate = false }) {
-  const [ref, inView] = useInView({ threshold: 0.3 });
-  const mounted = useMountedIn(immediate);
-  const shown = immediate ? mounted : inView;
+export function DisplayHeading({ lines, className = "", id }) {
   return (
-    <h1 ref={immediate ? undefined : ref} id={id} data-in={shown ? "true" : "false"} className={`spx-display ${className}`}>
-      {lines.map((line, i) => (
-        <span className="spx-display-line" key={i}>
-          <span style={{ transitionDelay: `${i * 90}ms` }}>{line}</span>
-        </span>
-      ))}
+    <h1 id={id} className={`spx-display ${className}`}>
+      {lines.join(" ")}
     </h1>
   );
 }
@@ -54,31 +29,23 @@ function formatValue(n, decimals) {
 }
 
 export function StatRail({ stats }) {
-  const [ref, inView] = useInView({ threshold: 0.4 });
   return (
-    <div className="spx-stats" ref={ref}>
+    <div className="spx-stats">
       {stats.map((s) => (
-        <Stat key={s.label} stat={s} start={inView} />
+        <div className="spx-stat" key={s.label}>
+          <div className="spx-stat-value">
+            {s.prefix || ""}
+            {formatValue(s.value, s.decimals)}
+            {s.unit ? <span className="spx-stat-unit">{s.unit}</span> : null}
+          </div>
+          <div className="spx-stat-label">{s.label}</div>
+        </div>
       ))}
     </div>
   );
 }
 
-function Stat({ stat, start }) {
-  const value = useCountUp(stat.value, { start });
-  return (
-    <div className="spx-stat">
-      <div className="spx-stat-value">
-        {stat.prefix || ""}
-        {formatValue(value, stat.decimals)}
-        {stat.unit ? <span className="spx-stat-unit">{stat.unit}</span> : null}
-      </div>
-      <div className="spx-stat-label">{stat.label}</div>
-    </div>
-  );
-}
-
-// Inline SVG icon set (no emoji, single stroke language: 1.6 / currentColor).
+// Line icons, single colour, 24x24 standard — matching the DS icon family.
 const PATHS = {
   engine: "M4 13v-2a2 2 0 0 1 2-2h1V7h4v2h3l3 3h3v4h-3l-3 3h-7l-3-3H4Z",
   drivetrain: "M12 4v16M4 8h16M6 16h12M8 4v4M16 4v4M8 16v4M16 16v4",
@@ -92,7 +59,7 @@ const PATHS = {
   shield: "M12 3 5 6v6c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6l-7-3Z",
 };
 
-export function Icon({ name, size = 22 }) {
+export function Icon({ name, size = 24 }) {
   return (
     <svg
       width={size}
@@ -111,7 +78,7 @@ export function Icon({ name, size = 22 }) {
   );
 }
 
-export function ArrowRight({ size = 18 }) {
+export function ArrowRight({ size = 16 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
       <path d="M5 12h14M13 6l6 6-6 6" />
@@ -119,7 +86,7 @@ export function ArrowRight({ size = 18 }) {
   );
 }
 
-export function DownloadIcon({ size = 18 }) {
+export function DownloadIcon({ size = 16 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
       <path d="M12 4v11M7 11l5 4 5-4M5 19h14" />
