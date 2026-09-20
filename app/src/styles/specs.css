@@ -140,6 +140,12 @@
 @media (min-width: 992px) {
   .spx-display { font-size: var(--font-size-h1); line-height: var(--line-height-h1); }
 }
+/* The token file has carried an 80px hero size since the handoff and nothing
+   used it. It only works on a short two-line headline, so it is opted into
+   per-heading rather than applied to every .spx-display. */
+@media (min-width: 1200px) {
+  .spx-display-xl { font-size: var(--font-size-hero); line-height: var(--line-height-hero); }
+}
 .spx-h2 {
   margin: var(--space-2) 0 0;
   font-size: var(--font-size-h4);
@@ -305,7 +311,14 @@
   gap: var(--space-9);
 }
 @media (min-width: 768px) { .spx-stats { grid-template-columns: repeat(4, 1fr); } }
-.spx-stat { border-top: 3px solid var(--border-accent-underline); padding-top: var(--space-4); }
+/* The 3px top rule is laid in as the hairline; motion.css draws the yellow
+   over it as the figure counts up. Under prefers-reduced-motion the yellow is
+   simply present, so the DS's solid yellow rule is what renders. */
+.spx-stat {
+  position: relative;
+  border-top: 3px solid var(--border-default);
+  padding-top: var(--space-4);
+}
 .spx-stat-value {
   font-size: var(--font-size-h4);
   font-weight: var(--font-weight-bold);

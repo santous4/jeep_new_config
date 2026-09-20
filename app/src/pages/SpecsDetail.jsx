@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { SpecsTopBar } from "../components/SpecsTopBar";
-import { StatRail, Icon, DownloadIcon } from "../components/specs/primitives";
-import { useIsVisible } from "../hooks/useMotion";
+import { Curtain, DisplayHeading, Drift, Reveal, Rule, StatRail, Icon, DownloadIcon } from "../components/specs/primitives";
+import { useIsVisible, useReveal } from "../hooks/useMotion";
 import { Footer } from "../design-system/Footer";
 import { MODELS, byModelId, money } from "../data/models";
 import { downloadModelSpecPdf } from "../lib/generateSpecPdf";
@@ -19,6 +19,7 @@ export function SpecsDetail() {
   }, [modelId]);
 
   const [heroCtaRef, heroCtaVisible] = useIsVisible();
+  const [, ctaShown] = useReveal({ immediate: true });
 
   // The bar is position:fixed, so it reserves no space of its own — measure it
   // and pad the page, or it covers the last section.
@@ -39,26 +40,37 @@ export function SpecsDetail() {
 
   return (
     <div className="spx" style={{ paddingBottom: showSticky ? stickyHeight : 0 }}>
+      <Curtain />
       <SpecsTopBar backTo="/specs" backLabel="All models" />
 
       <section className="spx-hero" aria-labelledby="spx-model-title">
         <div className="spx-hero-inner">
           <div>
-            <span className="spx-eyebrow">{model.bodyStyle}</span>
-            <h1 className="spx-display" id="spx-model-title">
-              {model.name}
-            </h1>
-            <div className="spx-rule" />
-            <p className="spx-lede">{model.tagline}</p>
+            <Reveal as="span" className="spx-eyebrow" delay={40} immediate>
+              {model.bodyStyle}
+            </Reveal>
+            <DisplayHeading id="spx-model-title" lines={[model.name]} />
+            <Rule delay={430} immediate />
+            <Reveal as="p" className="spx-lede" delay={520} immediate>
+              {model.tagline}
+            </Reveal>
 
-            <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-2)", marginTop: "var(--space-7)" }}>
+            <Reveal delay={600} immediate style={{ display: "flex", alignItems: "baseline", gap: "var(--space-2)", marginTop: "var(--space-7)" }}>
               <span className="spx-card-price-label">Starting from</span>
               <span style={{ fontSize: "var(--font-size-h4)", fontWeight: "var(--font-weight-bold)", fontVariantNumeric: "tabular-nums" }}>
                 {money(model.startingPrice)}
               </span>
-            </div>
+            </Reveal>
 
-            <div ref={heroCtaRef} style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)", marginTop: "var(--space-7)" }}>
+            {/* This row keeps its own ref: the sticky bar mirrors it, so the
+                observer has to stay on the element the visitor actually sees.
+                The reveal is applied by class rather than by wrapping it. */}
+            <div
+              ref={heroCtaRef}
+              className="jm-reveal"
+              data-shown={ctaShown ? "true" : "false"}
+              style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)", marginTop: "var(--space-7)", "--jm-delay": "680ms" }}
+            >
               <button type="button" className="spx-btn spx-btn-primary" onClick={() => downloadModelSpecPdf(model)}>
                 <DownloadIcon />
                 PDF download
@@ -71,9 +83,9 @@ export function SpecsDetail() {
             </div>
           </div>
 
-          <div className="spx-hero-media">
-            <img src={wranglerImg} alt={`Jeep ${model.name}`} width="560" height="270" />
-          </div>
+          <Drift className="spx-hero-media" delay={280}>
+            <img className="jm-float" src={wranglerImg} alt={`Jeep ${model.name}`} width="560" height="270" />
+          </Drift>
         </div>
       </section>
 
@@ -85,33 +97,35 @@ export function SpecsDetail() {
 
       <section className="spx-section spx-band-subtle" aria-labelledby="spx-story-title">
         <div className="spx-shell">
-          <span className="spx-eyebrow">{model.story.kicker}</span>
-          <h2 className="spx-h2" id="spx-story-title">
+          <Reveal as="span" className="spx-eyebrow">{model.story.kicker}</Reveal>
+          <Reveal as="h2" className="spx-h2" id="spx-story-title" delay={90}>
             {model.story.title}
-          </h2>
-          <div className="spx-rule" />
-          <p className="spx-sub">{model.story.body}</p>
+          </Reveal>
+          <Rule delay={260} />
+          <Reveal as="p" className="spx-sub" delay={340}>
+            {model.story.body}
+          </Reveal>
         </div>
       </section>
 
       <section className="spx-section" aria-labelledby="spx-features-title">
         <div className="spx-shell">
           <div className="spx-section-head">
-            <span className="spx-eyebrow">What defines it</span>
-            <h2 className="spx-h2" id="spx-features-title">
+            <Reveal as="span" className="spx-eyebrow">What defines it</Reveal>
+            <Reveal as="h2" className="spx-h2" id="spx-features-title" delay={90}>
               Built around four ideas
-            </h2>
-            <div className="spx-rule" />
+            </Reveal>
+            <Rule delay={260} />
           </div>
           <div className="spx-features">
-            {model.features.map((f) => (
-              <article className="spx-feature" key={f.title}>
+            {model.features.map((f, i) => (
+              <Reveal as="article" className="spx-feature" key={f.title} delay={i * 70}>
                 <span className="spx-feature-icon">
                   <Icon name={f.icon} />
                 </span>
                 <h3>{f.title}</h3>
                 <p>{f.body}</p>
-              </article>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -120,18 +134,18 @@ export function SpecsDetail() {
       <section className="spx-section spx-band-subtle" aria-labelledby="spx-specs-title">
         <div className="spx-shell">
           <div className="spx-section-head">
-            <span className="spx-eyebrow">The detail</span>
-            <h2 className="spx-h2" id="spx-specs-title">
+            <Reveal as="span" className="spx-eyebrow">The detail</Reveal>
+            <Reveal as="h2" className="spx-h2" id="spx-specs-title" delay={90}>
               Full specification
-            </h2>
-            <div className="spx-rule" />
+            </Reveal>
+            <Rule delay={260} />
           </div>
           <dl style={{ margin: 0 }}>
-            {model.highlights.map((h) => (
-              <div className="spx-spec-row" key={h.k}>
+            {model.highlights.map((h, i) => (
+              <Reveal className="spx-spec-row" key={h.k} delay={Math.min(i, 8) * 50}>
                 <dt>{h.k}</dt>
                 <dd>{h.v}</dd>
-              </div>
+              </Reveal>
             ))}
           </dl>
           <p className="ofr-terms" style={{ maxWidth: "80ch", marginTop: "var(--space-7)" }}>
@@ -144,11 +158,11 @@ export function SpecsDetail() {
       <section className="spx-section" aria-labelledby="spx-more-title">
         <div className="spx-shell">
           <div className="spx-section-head">
-            <span className="spx-eyebrow">Keep looking</span>
-            <h2 className="spx-h2" id="spx-more-title">
+            <Reveal as="span" className="spx-eyebrow">Keep looking</Reveal>
+            <Reveal as="h2" className="spx-h2" id="spx-more-title" delay={90}>
               Other models
-            </h2>
-            <div className="spx-rule" />
+            </Reveal>
+            <Rule delay={260} />
           </div>
           <div className="spx-rail">
             {others.map((m) => (

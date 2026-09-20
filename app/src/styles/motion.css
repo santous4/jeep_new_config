@@ -1,0 +1,220 @@
+/* ===========================================================================
+   Motion layer — "Editorial Motion".
+
+   The Jeep UAE design system says "Interaction states are colour inversions,
+   not motion ... No entrance animations, no parallax". That rule is amended
+   here, deliberately and only for the marketing surfaces (specs, lineup,
+   offers). Everything else the system says is kept exactly: white page,
+   #ffba00 and black only, square corners, flat blocks, hairline rules and the
+   0.5s colour-inversion CTA. No new colour, radius or shadow value appears
+   below — the only new material is time.
+
+   Product and transactional chrome (configurator controls, forms, the header)
+   is untouched, and every entrance here is suppressed under
+   prefers-reduced-motion at the bottom of this file.
+
+   Six primitives, matching the motion board on the design canvas:
+     01 curtain wipe   .jm-curtain
+     02 masked rise    .jm-lines / .jm-line
+     03 rule draw      .jm-rule
+     04 render drift   .jm-drift + .jm-float
+     05 figure roll    .spx-stats (count-up lives in useCountUp)
+     06 row inversion  hover rules at the foot of this file
+   =========================================================================== */
+
+.spx {
+  /* Settle curve for entrances, wipe curve for panels and rules. The DS's own
+     --easing-default (plain `ease`) stays in charge of colour transitions. */
+  --jm-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --jm-ease-wipe: cubic-bezier(0.76, 0, 0.24, 1);
+  --jm-dur-rise: 1000ms;
+  --jm-dur-fade: 800ms;
+  --jm-dur-wipe: 700ms;
+  --jm-dur-drift: 1300ms;
+}
+
+/* --- 01 Curtain wipe ----------------------------------------------------- */
+/* One yellow pass across the viewport on mount, then the element unmounts
+   (see Curtain in components/specs/primitives.jsx) so nothing is left over it. */
+
+@keyframes jm-curtain {
+  0% { transform: translateX(-101%); }
+  45% { transform: translateX(0); }
+  100% { transform: translateX(101%); }
+}
+.jm-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  background: var(--brand-yellow);
+  animation: jm-curtain 1.05s var(--jm-ease-wipe, cubic-bezier(0.76, 0, 0.24, 1)) both;
+}
+
+/* --- Shared reveal ------------------------------------------------------- */
+/* Driven by data-shown, which useReveal flips when the element scrolls in.
+   Per-element stagger comes from an inline --jm-delay. */
+
+.jm-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity var(--jm-dur-fade) var(--jm-ease-out) var(--jm-delay, 0ms),
+    transform var(--jm-dur-fade) var(--jm-ease-out) var(--jm-delay, 0ms);
+}
+.jm-reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- 02 Masked line rise ------------------------------------------------- */
+/* Each headline line sits in its own clipping box and rises out of it. This is
+   what carries the 80px display size without it landing like a brick. */
+
+.jm-lines { display: block; }
+.jm-line {
+  display: block;
+  overflow: hidden;
+  /* The clip box has to clear descenders, or "g" and "y" are shaved. */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.jm-line > span {
+  display: block;
+  transform: translateY(112%);
+  transition: transform var(--jm-dur-rise) var(--jm-ease-out) var(--jm-delay, 0ms);
+}
+.jm-lines[data-shown="true"] .jm-line > span { transform: none; }
+
+/* --- 03 Rule draw -------------------------------------------------------- */
+/* The DS's 3.2em yellow section rule, drawn from the left instead of
+   appearing. Same rule, same width, same colour. */
+
+.spx-rule.jm-rule,
+.jm-rule {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--jm-dur-wipe) var(--jm-ease-wipe) var(--jm-delay, 0ms);
+}
+.jm-rule[data-shown="true"] { transform: scaleX(1); }
+
+/* --- 04 Render drift + float --------------------------------------------- */
+/* Drift is on the wrapper and float on the image, because an animation on the
+   same element would win over the transition and the entrance would be lost. */
+
+.jm-drift {
+  opacity: 0;
+  transform: translateX(70px) scale(1.04);
+  transition:
+    opacity var(--jm-dur-fade) var(--jm-ease-out) var(--jm-delay, 0ms),
+    transform var(--jm-dur-drift) var(--jm-ease-out) var(--jm-delay, 0ms);
+}
+.jm-drift[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes jm-float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+/* Only starts once the drift has landed, so the two never fight. */
+.jm-drift[data-shown="true"] .jm-float { animation: jm-float 7s ease-in-out 2s infinite; }
+
+/* --- 05 Figure roll ------------------------------------------------------ */
+/* The stat's top rule draws in as its number counts up. specs.css sets the
+   3px rule to the hairline grey; the yellow is this overlay. */
+
+.spx-stat::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -3px;
+  height: 3px;
+  width: 100%;
+  background: var(--brand-yellow);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--jm-dur-wipe) var(--jm-ease-wipe) var(--jm-delay, 0ms);
+}
+.spx-stats[data-shown="true"] .spx-stat::after { transform: scaleX(1); }
+
+/* --- 06 Row inversion ---------------------------------------------------- */
+/* The brand's colour-inversion hover, wiped rather than switched: the hairline
+   above a card's footer is overdrawn in yellow from the left, and the studio
+   render eases up inside its fixed media box. */
+
+.spx-card-foot,
+.ofr-foot { position: relative; }
+.spx-card-foot::after,
+.ofr-foot::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  height: 1px;
+  width: 100%;
+  background: var(--brand-yellow);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 500ms var(--jm-ease-wipe);
+}
+.spx-card:hover .spx-card-foot::after,
+.ofr-card:hover .ofr-foot::after { transform: scaleX(1); }
+
+.spx-card-media img,
+.ofr-media img { transition: transform 700ms var(--jm-ease-out); }
+.spx-card:hover .spx-card-media img,
+.ofr-card:hover .ofr-media img { transform: scale(1.04); }
+
+.spx-card-link,
+.ofr-cta { display: inline-flex; align-items: center; gap: var(--space-2); }
+.spx-card-link::after,
+.ofr-cta::after {
+  content: "";
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 400ms var(--jm-ease-out);
+}
+.spx-card:hover .spx-card-link::after,
+.ofr-card:hover .ofr-cta::after { width: 14px; }
+
+/* Reveal wrappers become the grid item, so they have to pass the stretch
+   through or the tiles stop matching height. */
+.spx-bento > .jm-reveal,
+.ofr-grid > .jm-reveal { display: flex; }
+.spx-bento > .jm-reveal > .spx-card,
+.ofr-grid > .jm-reveal > .ofr-card { flex: 1; }
+
+/* --- The whole layer, off --------------------------------------------------
+   Everything above degrades to the static DS-literal page, which is exactly
+   what shipped before this file existed. */
+
+@media (prefers-reduced-motion: reduce) {
+  .jm-curtain { display: none; }
+  .jm-reveal,
+  .jm-drift {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .jm-line > span,
+  .jm-rule,
+  .spx-stat::after,
+  .spx-card-foot::after,
+  .ofr-foot::after {
+    transform: none;
+    transition: none;
+  }
+  .jm-rule,
+  .spx-stat::after { transform: scaleX(1); }
+  .jm-drift[data-shown="true"] .jm-float { animation: none; }
+  .spx-card-media img,
+  .ofr-media img { transition: none; }
+  .spx-card:hover .spx-card-media img,
+  .ofr-card:hover .ofr-media img { transform: none; }
+  .spx-card-link::after,
+  .ofr-cta::after { transition: none; }
+}

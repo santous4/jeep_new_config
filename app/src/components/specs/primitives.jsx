@@ -1,26 +1,87 @@
+import { useEffect, useState } from "react";
+import { prefersReducedMotion, useCountUp, useReveal } from "../../hooks/useMotion";
+
 // Presentational primitives for the specs/offers pages.
 //
-// These used to run scroll-reveals, a masked headline rise and count-up stats.
-// The Jeep UAE DS is explicit that "Animation is minimal ... No entrance
-// animations, no parallax, no bounce" and that "Interaction states are colour
-// inversions, not motion", so they now render statically. Reveal and
-// DisplayHeading keep their signatures so call sites stay unchanged.
+// These carry the motion layer described in styles/motion.css: a scroll-fired
+// reveal, a masked line rise for display headings, and figures that count to
+// their value. All three fall back to the static Jeep UAE DS page when the
+// visitor asks for reduced motion.
 
-export function Reveal({ children, as: Tag = "div", className = "", style, delay, immediate, ...rest }) {
-  void delay;
-  void immediate;
+// 01 — the yellow page entrance. Unmounts itself once the pass is done, so it
+// never sits over the page as an invisible fixed layer.
+export function Curtain() {
+  const [done, setDone] = useState(() => prefersReducedMotion());
+
+  useEffect(() => {
+    if (done) return undefined;
+    const t = setTimeout(() => setDone(true), 1200);
+    return () => clearTimeout(t);
+  }, [done]);
+
+  if (done) return null;
+  return <div className="jm-curtain" aria-hidden="true" />;
+}
+
+// Shared reveal. `delay` staggers siblings; `immediate` is for content above
+// the fold, which the observer's negative rootMargin would otherwise skip.
+export function Reveal({ children, as: Tag = "div", className = "", style, delay = 0, immediate = false, ...rest }) {
+  const [ref, shown] = useReveal({ immediate });
   return (
-    <Tag className={className} style={style} {...rest}>
+    <Tag
+      ref={ref}
+      data-shown={shown ? "true" : "false"}
+      className={`jm-reveal ${className}`.trim()}
+      style={delay ? { ...style, "--jm-delay": `${delay}ms` } : style}
+      {...rest}
+    >
       {children}
     </Tag>
   );
 }
 
-export function DisplayHeading({ lines, className = "", id }) {
+// 03 — the DS's 3.2em yellow section rule, drawn from the left.
+export function Rule({ delay = 0, immediate = false, className = "" }) {
+  const [ref, shown] = useReveal({ immediate });
   return (
-    <h1 id={id} className={`spx-display ${className}`}>
-      {lines.join(" ")}
-    </h1>
+    <div
+      ref={ref}
+      data-shown={shown ? "true" : "false"}
+      className={`spx-rule jm-rule ${className}`.trim()}
+      style={delay ? { "--jm-delay": `${delay}ms` } : undefined}
+    />
+  );
+}
+
+// 04 — the render settles in from the right at slight overscale, then breathes
+// on a slow float. Drift is on the wrapper and float on the image inside it,
+// because an animation and a transition on one element would fight.
+export function Drift({ children, className = "", delay = 0, immediate = true }) {
+  const [ref, shown] = useReveal({ immediate });
+  return (
+    <div
+      ref={ref}
+      data-shown={shown ? "true" : "false"}
+      className={`jm-drift ${className}`.trim()}
+      style={delay ? { "--jm-delay": `${delay}ms` } : undefined}
+    >
+      {children}
+    </div>
+  );
+}
+
+// 02 — masked line rise. Each line clips its own box and rises out of it,
+// which is what lets the 80px hero size land without arriving as a slab.
+export function DisplayHeading({ lines, className = "", id, as: Tag = "h1", stagger = 110, delay = 120, immediate = true }) {
+  const [ref, shown] = useReveal({ immediate });
+  return (
+    <Tag ref={ref} id={id} data-shown={shown ? "true" : "false"} className={`spx-display jm-lines ${className}`.trim()}>
+      {lines.map((line, i) => (
+        <span className="jm-line" key={line}>
+          <span style={{ "--jm-delay": `${delay + i * stagger}ms` }}>{line}</span>
+        </span>
+      ))}
+    </Tag>
   );
 }
 
@@ -28,18 +89,29 @@ function formatValue(n, decimals) {
   return decimals ? n.toFixed(decimals) : Math.round(n).toLocaleString("en-AE");
 }
 
-export function StatRail({ stats }) {
+// 05 — figures roll to their value as the rail scrolls in, with the 3px top
+// rule drawing alongside. Each stat is its own component so the count-up hook
+// is never called in a loop.
+function Stat({ stat, index, active }) {
+  const value = useCountUp(stat.value, { delay: index * 80, active });
   return (
-    <div className="spx-stats">
-      {stats.map((s) => (
-        <div className="spx-stat" key={s.label}>
-          <div className="spx-stat-value">
-            {s.prefix || ""}
-            {formatValue(s.value, s.decimals)}
-            {s.unit ? <span className="spx-stat-unit">{s.unit}</span> : null}
-          </div>
-          <div className="spx-stat-label">{s.label}</div>
-        </div>
+    <div className="spx-stat" style={{ "--jm-delay": `${index * 80}ms` }}>
+      <div className="spx-stat-value">
+        {stat.prefix || ""}
+        {formatValue(value, stat.decimals)}
+        {stat.unit ? <span className="spx-stat-unit">{stat.unit}</span> : null}
+      </div>
+      <div className="spx-stat-label">{stat.label}</div>
+    </div>
+  );
+}
+
+export function StatRail({ stats, immediate = false }) {
+  const [ref, shown] = useReveal({ immediate, threshold: 0.35 });
+  return (
+    <div ref={ref} data-shown={shown ? "true" : "false"} className="spx-stats">
+      {stats.map((s, i) => (
+        <Stat key={s.label} stat={s} index={i} active={shown} />
       ))}
     </div>
   );

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { SpecsTopBar } from "../components/SpecsTopBar";
-import { ArrowRight } from "../components/specs/primitives";
+import { ArrowRight, Curtain, DisplayHeading, Reveal, Rule } from "../components/specs/primitives";
 import { Footer } from "../design-system/Footer";
 import { OFFERS, CATEGORIES, SORTS, filterOffers, headline, urgency } from "../data/offers";
 import wranglerImg from "../assets/jeep/wrangler.png";
@@ -135,6 +135,7 @@ export function Offers() {
 
   return (
     <div className="spx">
+      <Curtain />
       <SpecsTopBar title="Offers" backTo="/specs" backLabel="Specifications" />
 
       {/* Deliberately short for a browse page: the job is to get offers above
@@ -142,13 +143,15 @@ export function Offers() {
       <section className="spx-hero" aria-labelledby="ofr-title">
         <div className="spx-hero-inner" style={{ gridTemplateColumns: "1fr" }}>
           <div>
-            <span className="spx-eyebrow">Al-Futtaim Jeep · United Arab Emirates</span>
-            <h1 className="spx-display" id="ofr-title">Current offers</h1>
-            <div className="spx-rule" />
-            <p className="spx-lede">
+            <Reveal as="span" className="spx-eyebrow" delay={40} immediate>
+              Al-Futtaim Jeep · United Arab Emirates
+            </Reveal>
+            <DisplayHeading id="ofr-title" lines={["Current offers"]} />
+            <Rule delay={430} immediate />
+            <Reveal as="p" className="spx-lede" delay={520} immediate>
               Every live Jeep offer in one place — finance, pre-owned, servicing and parts. Filter by what you need,
               sort by what matters, and see exactly when each one ends.
-            </p>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -222,8 +225,12 @@ export function Offers() {
           </div>
 
           <div className="ofr-grid">
-            {results.map((o) => (
-              <OfferCard key={o.id} offer={o} />
+            {results.map((o, i) => (
+              // Re-keyed on the active filter so a newly filtered set cascades
+              // in again instead of snapping into place.
+              <Reveal key={`${category}-${sort}-${o.id}`} delay={Math.min(i, 8) * 70}>
+                <OfferCard offer={o} />
+              </Reveal>
             ))}
 
             {results.length === 0 ? (
