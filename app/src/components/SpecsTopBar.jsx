@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import logoJeep from "../assets/jeep/logo-jeep-white.png";
 
-export function SpecsTopBar({ backTo, backLabel }) {
+export function SpecsTopBar({ backTo, backLabel, title = "Specifications" }) {
   return (
     <header className="spx-topbar">
       <Link to="/" className="spx-topbar-brand">
         <img src={logoJeep} alt="Jeep" />
-        <span className="spx-topbar-title">Specifications</span>
+        <span className="spx-topbar-title">{title}</span>
       </Link>
       {backTo ? (
         <Link to={backTo} className="spx-topbar-back">
