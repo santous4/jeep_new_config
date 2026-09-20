@@ -37,7 +37,12 @@
   padding-inline: var(--spx-gutter);
 }
 
-/* Alternating white / #eeeeee bands — the DS's only background pair. */
+/* Alternating white / #eeeeee bands — the DS's only background pair.
+   --text-muted (grey-600) measures 4.61:1 on white but only 3.97:1 on the
+   #eeeeee band, under WCAG AA. Step it to grey-700 (5.10:1) inside bands;
+   every muted role reads the token, so this cascades without touching rules. */
+.spx-band-subtle,
+.spx-hero { --text-muted: var(--grey-700); }
 .spx-band-subtle { background: var(--surface-subtle); }
 .spx-section {
   padding-block: var(--section-padding-y-mobile);
@@ -216,34 +221,45 @@
   border-radius: var(--radius-none);
   box-shadow: var(--shadow-none);
 }
+/* Media contrasts with whichever band the card sits on, keeping the DS's
+   white / #eeeeee alternation instead of grey-on-grey. 16:9 rather than 16:10
+   because the studio renders are ~2.17:1 — a taller box just letterboxes them. */
 .spx-card-media {
+  position: relative;
   background: var(--surface-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
 }
-.spx-card-media img { display: block; width: 100%; height: 100%; object-fit: contain; padding: var(--space-6); }
+.spx-band-subtle .spx-card-media { background: var(--surface-card); }
+.spx-card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: var(--space-3) var(--space-6);
+}
 .spx-card-name {
   margin: var(--space-6) 0 0;
   font-size: var(--font-size-h5);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-medium);
   line-height: var(--line-height-h5);
   text-transform: var(--text-transform-cta);
 }
 .spx-card-tagline {
   margin: var(--space-2) 0 0;
-  font-size: var(--font-size-xsmall);
-  line-height: var(--line-height-small);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-body);
   color: var(--text-muted);
 }
 .spx-card-foot {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: space-between;
   gap: var(--space-6);
-  margin-top: var(--space-5);
+  margin-top: auto;
   padding-top: var(--space-4);
   border-top: 1px solid var(--border-default);
 }
@@ -268,9 +284,12 @@
 }
 .spx-card:hover .spx-card-link { color: var(--brand-yellow); }
 .spx-card-tag {
-  display: inline-block;
-  margin-bottom: var(--space-2);
-  padding: 2px var(--space-2);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  align-self: flex-start;
+  padding: var(--space-1) var(--space-2);
   background: var(--surface-brand);
   color: var(--text-on-brand);
   font-size: var(--font-size-tiny);

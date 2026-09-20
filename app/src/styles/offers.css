@@ -163,7 +163,7 @@
 /* Fixed aspect so the grid never reflows as renders load (CLS). */
 .ofr-media {
   position: relative;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   background: var(--surface-subtle);
   overflow: hidden;
 }
@@ -173,7 +173,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: var(--space-6);
+  padding: var(--space-3) var(--space-6);
 }
 
 .ofr-flags {
@@ -192,19 +192,21 @@
   align-items: center;
   gap: var(--space-1);
   padding: var(--space-1) var(--space-2);
+  border: 1px solid transparent;
   font-size: var(--font-size-tiny);
   font-weight: var(--font-weight-bold);
   text-transform: var(--text-transform-cta);
   white-space: nowrap;
 }
 .ofr-flag-featured { background: var(--surface-brand); color: var(--text-on-brand); }
+.ofr-flag-soon { border-color: var(--border-default); }
 /* Urgency always pairs an icon and words — never colour alone. */
 .ofr-flag-critical { background: var(--surface-inverse); color: var(--text-inverse); }
 .ofr-flag-soon { background: var(--surface-page); color: var(--text-primary); }
 
 .ofr-body { display: flex; flex-direction: column; flex: 1; padding-top: var(--space-6); }
 .ofr-kicker {
-  font-size: var(--font-size-tiny);
+  font-size: var(--font-size-xsmall);
   font-weight: var(--font-weight-bold);
   text-transform: var(--text-transform-cta);
   color: var(--text-muted);
@@ -213,11 +215,11 @@
   margin: var(--space-2) 0 0;
   font-size: var(--font-size-h5);
   font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-h5);
+  line-height: var(--line-height-h4);
 }
 .ofr-blurb {
   margin: var(--space-2) 0 0;
-  font-size: var(--font-size-xsmall);
+  font-size: var(--font-size-small);
   line-height: var(--line-height-body);
   color: var(--text-muted);
 }
@@ -235,7 +237,6 @@
   display: flex;
   align-items: baseline;
   gap: var(--space-2);
-  margin-top: auto;
   padding-top: var(--space-4);
 }
 .ofr-price-label { font-size: var(--font-size-tiny); text-transform: var(--text-transform-cta); color: var(--text-muted); }
@@ -250,10 +251,10 @@
 
 .ofr-foot {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   gap: var(--space-3);
-  margin-top: var(--space-4);
+  margin-top: auto;
   padding-top: var(--space-4);
   border-top: 1px solid var(--border-default);
 }

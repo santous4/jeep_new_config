@@ -71,9 +71,9 @@ export function SpecsList() {
             {visible.map((m) => (
               <Link key={m.id} to={`/specs/${m.id}`} className="spx-card" aria-label={`${m.name} specifications`}>
                 <div className="spx-card-media">
-                  <img src={wranglerImg} alt="" aria-hidden="true" loading="lazy" width="320" height="200" />
+                  <img src={wranglerImg} alt="" aria-hidden="true" loading="lazy" width="320" height="180" />
+                  {m.badge ? <span className="spx-card-tag">{m.badge}</span> : null}
                 </div>
-                {m.badge ? <span className="spx-card-tag">{m.badge}</span> : null}
                 <h3 className="spx-card-name">{m.name}</h3>
                 <p className="spx-card-tagline">{m.tagline}</p>
                 <div className="spx-card-foot">
